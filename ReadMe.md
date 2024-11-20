@@ -3,30 +3,37 @@ Meditronix 2.0 is an **updated GUI version of Meditronix** that was written in C
 Meditronix 2.0 builds up on its predecessor with robust data handling done using MySQL database instead of simple file handling .
 The software is build using JavaFX & MySQL database & drivers.
 All relevant project info and software structure can be found in the project documentation.
-Currently Implemented Functionalities
-User Roles and Login:
-Role-Based Login:
-Shop Owner: Access to inventory and sales functions.
-Doctor: Access to prescription creation and historical data.
-Patient: Access to view and purchase from inventory.
-Secure login system with credentials stored in the users table.
-Features by User Role:
-Shop Owner:
 
-View inventory specific to their shop location.
-Manage stock and update records.
-Doctor:
 
-Create new prescriptions.
-View old prescriptions for patients.
-Patient:
+## **Currently Implemented Functionalities**
 
-Search and view prescriptions.
-Purchase items from a generic inventory.
-Make special purchases based on prescription limits.
-Inventory Management:
-Dynamic inventory display filtered by user profile location.
-Comprehensive data representation with details of available products.
+### **1. User Roles and Login**
+- **Role-Based Login**:
+  - **Shop Owner**: Access to inventory and sales functions.
+  - **Doctor**: Access to prescription creation and historical data.
+  - **Patient**: Access to view and purchase from the inventory.
+- **Secure Login System**:
+  - Credentials stored in the `users` table.
+
+### **2. Features by User Role**
+#### **Shop Owner**:
+- View inventory specific to their shop location.
+- Manage stock and update records.
+
+#### **Doctor**:
+- Create new prescriptions.
+- View old prescriptions for patients.
+
+#### **Patient**:
+- Search and view prescriptions.
+- Purchase items from a **generic inventory**.
+- Make special purchases based on prescription limits.
+
+### **3. Inventory Management**
+- **Dynamic Inventory Display**:
+  - Filtered by user profile location.
+- **Comprehensive Data Representation**:
+  - Includes details of available products.
 
 ---
 ## How to launch the application
