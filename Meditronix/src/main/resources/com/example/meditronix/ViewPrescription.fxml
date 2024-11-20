@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="722" prefWidth="957" styleClass="createprescription-pane" stylesheets="@AllStylingDoctorsMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.meditronix.ViewPrescriptionController">
+   <children>
+      <Button fx:id="backButton" layoutX="840.0" layoutY="646.0" mnemonicParsing="false" onAction="#backButtonPressed" prefHeight="35.0" prefWidth="67.0" styleClass="stylish-button" stylesheets="@AllStylingDoctorsMenu.css" text="Back" />
+      <Label layoutX="106.0" layoutY="265.0" prefHeight="19.0" prefWidth="186.0" text="Prescription Codes">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <TableView fx:id="prescodetable" layoutX="102.0" layoutY="309.0" prefHeight="313.0" prefWidth="749.0">
+         <columns>
+            <TableColumn fx:id="presCodeColumn" prefWidth="225.6000518798828" text="Prescription Code" />
+            <TableColumn fx:id="dateColumn" prefWidth="273.60003662109375" text="Date" />
+            <TableColumn fx:id="timeColumn" prefWidth="236.79998779296875" text="Time" />
+         </columns>
+      </TableView>
+      <Pane layoutX="-9.0" layoutY="-3.0" prefHeight="74.0" prefWidth="970.0" styleClass="transparent-pane2" stylesheets="@AllStylingDoctorsMenu.css">
+         <children>
+            <Label alignment="CENTER" layoutX="-6.0" layoutY="10.0" prefHeight="54.0" prefWidth="982.0" text="VIEW PRESCRIPTION">
+               <font>
+                  <Font name="Berlin Sans FB Demi Bold" size="20.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+      <Pane layoutX="106.0" layoutY="111.0" prefHeight="121.0" prefWidth="741.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
+         <children>
+            <Label layoutX="25.0" layoutY="42.0" text="Search Patient by Name">
+               <font>
+                  <Font name="System Bold" size="16.0" />
+               </font>
+            </Label>
+            <Button fx:id="searchpatientbutton" layoutX="568.0" layoutY="38.0" mnemonicParsing="false" onAction="#searchbuttonpressed" prefHeight="35.0" prefWidth="155.0" text="Search" />
+            <TextField fx:id="searchpatientnametf" layoutX="238.0" layoutY="38.0" prefHeight="35.0" prefWidth="296.0" />
+         </children>
+      </Pane>
+   </children>
+</Pane>

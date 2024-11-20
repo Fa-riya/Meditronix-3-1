@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="722.0" prefWidth="957.0" styleClass="signup-pane" stylesheets="@AllStyling.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.meditronix.GenericPurchaseController">
+   <children>
+      <TableView fx:id="GenericTable" layoutX="38.0" layoutY="96.0" prefHeight="527.0" prefWidth="473.0" stylesheets="@AllStyling.css">
+        <columns>
+          <TableColumn fx:id="NameColumn" prefWidth="194.0" text="Name" />
+          <TableColumn fx:id="DosageColumn" minWidth="0.0" prefWidth="87.5" text="Dosage" />
+            <TableColumn fx:id="PriceColumn" prefWidth="92.0" text="Price" />
+            <TableColumn fx:id="QuantityColumn" prefWidth="80.5" text="Quantity" />
+        </columns>
+      </TableView>
+      <TableView fx:id="CartTable" layoutX="565.0" layoutY="96.0" prefHeight="483.0" prefWidth="363.0" stylesheets="@AllStyling.css">
+        <columns>
+          <TableColumn fx:id="CartNameColumn" prefWidth="125.0" text="Name" />
+          <TableColumn fx:id="CartDosageColumn" prefWidth="58.0" text="Dosage" />
+            <TableColumn fx:id="CartQuantityColumn" prefWidth="85.5" text="Quantity" />
+            <TableColumn fx:id="CartPriceColumn" prefWidth="75.5" text="Price" />
+        </columns>
+      </TableView>
+      <Label alignment="CENTER" layoutX="669.0" layoutY="32.0" prefHeight="32.0" prefWidth="183.0" styleClass="custom-label2" stylesheets="@AllStyling.css" text="CART" textFill="#000000db">
+         <font>
+            <Font name="Berlin Sans FB" size="22.0" />
+         </font>
+      </Label>
+      <Button fx:id="deleteButton" layoutX="565.0" layoutY="632.0" mnemonicParsing="false" onAction="#DeleteButtonPressed" prefHeight="46.0" prefWidth="153.0" styleClass="custom-button2" stylesheets="@AllStyling.css" text="DELETE" textFill="#000000be">
+         <font>
+            <Font name="Berlin Sans FB" size="19.0" />
+         </font></Button>
+      <Button fx:id="AddToCart" layoutX="316.0" layoutY="632.0" mnemonicParsing="false" onAction="#AddToCartButtonPressed" prefHeight="46.0" prefWidth="194.0" styleClass="custom-button2" stylesheets="@AllStyling.css" text="ADD" textFill="#000000a9">
+         <font>
+            <Font name="System Bold" size="17.0" />
+         </font></Button>
+      <Button fx:id="Checkout" layoutX="775.0" layoutY="632.0" mnemonicParsing="false" onAction="#checkoutButtonPressed" prefHeight="46.0" prefWidth="153.0" styleClass="custom-button2" stylesheets="@AllStyling.css" text="CHECKOUT" textFill="#000000c7">
+         <font>
+            <Font name="Berlin Sans FB" size="20.0" />
+         </font></Button>
+      <Label alignment="CENTER" layoutX="130.0" layoutY="31.0" prefHeight="32.0" prefWidth="287.0" styleClass="custom-label2" stylesheets="@AllStyling.css" text="GENERIC MEDICINES" textFill="#000000df">
+         <font>
+            <Font name="Berlin Sans FB" size="23.0" />
+         </font>
+      </Label>
+      <ComboBox fx:id="QuantityBox" layoutX="38.0" layoutY="662.0" prefHeight="25.0" prefWidth="243.0" promptText="Quantity" style="-fx-background-radius: 20; -fx-background-color: white;" stylesheets="@ShopInventory.css" />
+      <Button fx:id="BackButton" layoutX="38.0" layoutY="32.0" mnemonicParsing="false" onAction="#BackButtonPressed" prefHeight="36.0" prefWidth="62.0" styleClass="custom-button2" stylesheets="@AllStyling.css" text="BACK" textFill="#000000bc">
+         <font>
+            <Font name="Berlin Sans FB" size="15.0" />
+         </font>
+      </Button>
+      <Label fx:id="subtotalLabel" layoutX="693.0" layoutY="588.0" prefHeight="25.0" prefWidth="229.0" styleClass="custom-label2" text="   SUBTOTAL  :    " textFill="#000000b0">
+         <font>
+            <Font name="Berlin Sans FB" size="16.0" />
+         </font></Label>
+      <Label layoutX="38.0" layoutY="632.0" prefHeight="25.0" prefWidth="243.0" styleClass="custom-label2" stylesheets="@AllStyling.css" text="     QUANTITY" textFill="#000000c9">
+         <font>
+            <Font name="Berlin Sans FB" size="14.0" />
+         </font>
+      </Label>
+   </children>
+</Pane>
