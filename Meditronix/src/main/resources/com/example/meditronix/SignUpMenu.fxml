@@ -3,6 +3,8 @@
 <?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
@@ -10,9 +12,9 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="510.0" prefWidth="768.0" styleClass="signup-pane" stylesheets="@AllStyling.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.meditronix.SignUpController">
    <children>
-      <Pane layoutX="66.0" layoutY="36.0" prefHeight="411.0" prefWidth="637.0" styleClass="transparent-pane" stylesheets="@AllStyling.css">
+      <Pane layoutX="20.0" layoutY="16.0" prefHeight="472.0" prefWidth="724.0" styleClass="transparent-pane" stylesheets="@AllStyling.css">
          <children>
-            <Label alignment="CENTER" layoutX="116.0" layoutY="62.0" prefHeight="39.0" prefWidth="407.0" stylesheets="@AllStyling.css" text="CUSTOMER SIGN UP" textFill="#000000c6">
+            <Label alignment="CENTER" layoutX="159.0" layoutY="23.0" prefHeight="39.0" prefWidth="407.0" stylesheets="@AllStyling.css" text="CUSTOMER SIGN UP" textFill="#000000c6">
                <font>
                   <Font name="Berlin Sans FB" size="39.0" />
                </font>
@@ -21,8 +23,18 @@
                   <String fx:value="custom-drop-shadow" />
                </styleClass>
             </Label>
-            <TextField fx:id="SignUpName" layoutX="168.0" layoutY="176.0" prefHeight="25.0" prefWidth="313.0" promptText="Name" style="-fx-background-radius: 10;" />
-            <Button fx:id="CreateAccount" layoutX="176.0" layoutY="273.0" mnemonicParsing="false" onAction="#CreateAccountPress" prefHeight="53.0" prefWidth="302.0" stylesheets="@AllStyling.css" text="CREATE ACCOUNT" textFill="#000000c2">
+            <TextField fx:id="FullName" layoutX="159.0" layoutY="111.0" prefHeight="33.0" prefWidth="407.0" promptText="Full Name" style="-fx-background-radius: 10;" />
+            <MenuButton fx:id="GenderMenu" layoutX="159.0" layoutY="159.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="407.0" text="Select Gender" textFill="#6e6e6eb9" style="-fx-background-radius: 10; -fx-border-radius: 10; -fx-background-color: white; -fx-border-color: #cccccc; -fx-padding: 5;">
+               <items>
+                  <MenuItem text="Male" onAction="#handleGenderSelect"/>
+                  <MenuItem text="Female" onAction="#handleGenderSelect"/>
+                  <MenuItem text="Other" onAction="#handleGenderSelect"/>
+               </items>
+            </MenuButton>
+            <TextField fx:id="Number" layoutX="159.0" layoutY="343.0" prefHeight="33.0" prefWidth="407.0" promptText="Contact No" style="-fx-background-radius: 10;" />
+            <TextField fx:id="Email" layoutX="159.0" layoutY="300.0" prefHeight="33.0" prefWidth="407.0" promptText="Email" style="-fx-background-radius: 10;" />
+            <TextField fx:id="SignUpName" layoutX="160.0" layoutY="207.0" prefHeight="33.0" prefWidth="407.0" promptText="User Name" style="-fx-background-radius: 10;" />
+            <Button fx:id="CreateAccount" layoutX="212.0" layoutY="399.0" mnemonicParsing="false" onAction="#CreateAccountPress" prefHeight="53.0" prefWidth="302.0" stylesheets="@AllStyling.css" text="CREATE ACCOUNT" textFill="#000000c2">
                <font>
                   <Font name="Berlin Sans FB" size="22.0" />
                </font>
@@ -31,12 +43,13 @@
                   <String fx:value="custom-drop-shadow" />
                </styleClass>
             </Button>
-            <PasswordField fx:id="SignUpPassword" layoutX="169.0" layoutY="225.0" prefHeight="25.0" prefWidth="313.0" promptText="Password" style="-fx-background-radius: 10;" />
+            <PasswordField fx:id="SignUpPassword" layoutX="160.0" layoutY="253.0" prefHeight="33.0" prefWidth="407.0" promptText="Password" style="-fx-background-radius: 10;" />
             <Button fx:id="BackButton" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#ReturnPress" prefHeight="43.0" prefWidth="65.0" styleClass="custom-button" stylesheets="@AllStyling.css" text="BACK" textFill="#000000a2">
                <font>
                   <Font name="Berlin Sans FB" size="11.0" />
                </font>
             </Button>
+
          </children>
       </Pane>
    </children>

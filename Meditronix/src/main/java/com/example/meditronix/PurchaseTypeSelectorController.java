@@ -27,8 +27,19 @@ public class PurchaseTypeSelectorController {
 
     @FXML
     private Button ReceiptButton;
+    @FXML
+    private Label welcomelabel;
 
-
+    @FXML
+    public void initialize() {
+        // Retrieve the username from the singleton and update the label
+        String username = UserSession.getInstance().getUsername();
+        if (username != null) {
+            welcomelabel.setText("WELCOME TO THE MEDICAL STORE, " + username.toUpperCase() + "!");
+        } else {
+            welcomelabel.setText("WELCOME TO THE MEDICAL STORE!");
+        }
+    }
     @FXML
     private void BackButtonPress(ActionEvent event) throws IOException {
         Object root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("MainScreen.fxml")));

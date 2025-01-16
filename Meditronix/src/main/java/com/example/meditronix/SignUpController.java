@@ -31,7 +31,14 @@ public class SignUpController implements Initializable {
 
     @FXML
     private TextField SignUpName;
-
+    @FXML
+    private TextField FullName;
+    @FXML
+    private TextField Number;
+    @FXML
+    private TextField Email;
+    @FXML
+    private MenuButton GenderMenu;
     @FXML
     private PasswordField SignUpPassword;
 
@@ -56,15 +63,19 @@ public class SignUpController implements Initializable {
     void CreateAccountPress(ActionEvent event) throws IOException {
         String username = SignUpName.getText();
         String password = SignUpPassword.getText();
+        String fullname = FullName.getText();
+        String emailid = Email.getText();
+        String number = Number.getText();
+        String gender = GenderMenu.getText();
         Database database = new Database();
         Connection con = database.dbConnect();
 
         // Check if username and password are not empty
-        if (username.isEmpty() || password.isEmpty()) {
+        if (username.isEmpty() || password.isEmpty() || number.isEmpty() || fullname.isEmpty() || emailid.isEmpty()) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Invalid Input");
-            alert.setContentText("Please enter a valid username and password.");
+            alert.setContentText("Please enter a valid information in all the fields");
             alert.showAndWait();
             return; // Return from the method if username or password is empty
         }
@@ -83,11 +94,21 @@ public class SignUpController implements Initializable {
                 // Execute the INSERT statement
                 int rowsInserted = statement.executeUpdate();
                 if (rowsInserted > 0) {
+                    // Insert into the `patient_info` table
+                    String patientSql = "INSERT INTO patient_info (username, name, date_of_birth, gender, contact_number, email) VALUES (?, ?, CURDATE(), ?, ?, ?)";
+                    PreparedStatement patientStmt = con.prepareStatement(patientSql);
+                    patientStmt.setString(1, username);
+                    patientStmt.setString(2, fullname);
+                    patientStmt.setString(3, gender);
+                    patientStmt.setString(4, number);
+                    patientStmt.setString(5, emailid);
+                    patientStmt.executeUpdate();
+
                     // Show a popup window indicating successful user insertion
                     Alert successAlert = new Alert(AlertType.INFORMATION);
                     successAlert.setTitle("Success");
                     successAlert.setHeaderText(null);
-                    successAlert.setContentText("User inserted successfully!");
+                    successAlert.setContentText("Your account has been created.");
                     successAlert.showAndWait();
 
                     // Switch to MainScreen.fxml scene upon user confirmation
@@ -145,6 +166,12 @@ public class SignUpController implements Initializable {
         Database db = new Database();
         db.dbConnect();
     }
+    @FXML
+    private void handleGenderSelect(ActionEvent event) {
+        MenuItem source = (MenuItem) event.getSource();
+        GenderMenu.setText(source.getText()); // Set the MenuButton text to the selected gender
+    }
+
 
 
 

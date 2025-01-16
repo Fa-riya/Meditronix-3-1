@@ -19,7 +19,7 @@
                   <String fx:value="custom-drop-shadow" />
                </styleClass>
             </Button>
-            <Label alignment="CENTER" layoutX="122.0" layoutY="56.0" prefHeight="52.0" prefWidth="602.0" stylesheets="@AllStyling.css" text="WELCOME TO THE MEDICAL STORE" textFill="WHITE">
+            <Label fx:id="welcomelabel" alignment="CENTER" layoutX="52.0" layoutY="56.0" prefHeight="52.0" prefWidth="734.0" stylesheets="@AllStyling.css" text="WELCOME TO THE MEDICAL STORE" textFill="WHITE">
                <font>
                   <Font name="Berlin Sans FB" size="34.0" />
                </font>

@@ -174,6 +174,10 @@ public class MainScreen implements Initializable{
         System.out.println("Hashed value: " + hashedPassword);
 
         if (state.equals(role) && username.equals(returned_username) && hashedPassword.equals(returned_hashed_password)) {
+
+            UserSession.getInstance().setUsername(returned_username);
+            UserSession.getInstance().setRole(role);
+
             loginNotify.setStyle("-fx-text-fill: #36e036");
             loginNotify.setText("Access Granted!! Logging in.....");
             currentUser = returned_username;
