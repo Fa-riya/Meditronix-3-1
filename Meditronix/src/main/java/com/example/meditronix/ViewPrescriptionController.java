@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.sql.Time;
 import java.util.Date;
 import java.util.List;
@@ -58,22 +59,34 @@ public class ViewPrescriptionController {
 
     @FXML
     private void searchbuttonpressed(ActionEvent event) {
-        String patientName = searchpatientnametf.getText();
-        System.out.println("Name: " + patientName);
-        if (!patientName.isEmpty()) {
-            List<Prescription> prescriptions = database.getPrescriptionCodesByPatientName(patientName);
-            if (!prescriptions.isEmpty()) {
-                System.out.println("Prescription Codes:");
-                for (Prescription prescription : prescriptions) {
-                    System.out.println(prescription.getPrescriptionCode());
+        String username = searchpatientnametf.getText().trim();
+        System.out.println("Username: " + username);
+
+        if (!username.isEmpty()) {
+            try {
+                // First get patient's ID from patient_info table
+                String patientId = database.getPatientId(username);
+
+                if (patientId != null) {
+                    // Get prescriptions from patient's prescription table
+                    List<Prescription> prescriptions = database.getPrescriptionsByPatientId(patientId);
+
+                    if (!prescriptions.isEmpty()) {
+                        System.out.println("Prescription Codes found for patient ID: " + patientId);
+                        ObservableList<Prescription> prescriptionList = FXCollections.observableArrayList(prescriptions);
+                        prescodetable.setItems(prescriptionList);
+                    } else {
+                        showErrorAlert("No prescriptions found for this patient.");
+                    }
+                } else {
+                    showErrorAlert("No patient found with username: " + username);
                 }
-                ObservableList<Prescription> prescriptionList = FXCollections.observableArrayList(prescriptions);
-                prescodetable.setItems(prescriptionList);
-            } else {
-                showErrorAlert("No prescription codes found for the patient: " + patientName);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showErrorAlert("Database error: " + e.getMessage());
             }
         } else {
-            showErrorAlert("Please enter a patient name.");
+            showErrorAlert("Please enter patient's username.");
         }
     }
 
@@ -91,6 +104,8 @@ public class ViewPrescriptionController {
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("generatedDate"));
         timeColumn.setCellValueFactory(new PropertyValueFactory<>("generatedTime"));
 
+
+
         // Add a listener to handle row selection
         prescodetable.setRowFactory(tv -> {
             TableRow<Prescription> row = new TableRow<>();
@@ -104,10 +119,15 @@ public class ViewPrescriptionController {
             return row;
         });
 
+        // Add username suggestions
         searchpatientnametf.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.isEmpty()) {
-                List<String> suggestions = database.getPatientNameSuggestions(newValue);
-                showSuggestions(suggestions);
+                try {
+                    List<String> suggestions = database.getUsernameSuggestions(newValue);
+                    showSuggestions(suggestions);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             } else {
                 hideSuggestions();
             }

@@ -29,6 +29,8 @@ import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
+import java.awt.Desktop;
+import javafx.scene.control.Alert;
 
 public class IndividualPrescription implements Initializable {
     @FXML
@@ -48,6 +50,7 @@ public class IndividualPrescription implements Initializable {
 
     @FXML
     private Button dnldPDF;
+
 
     @FXML
     private TableColumn<MedicineDataPrescription, String> medDosage;
@@ -69,12 +72,17 @@ public class IndividualPrescription implements Initializable {
 
     private String prescriptionCode;
 
+
     private Database database = new Database();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // No action needed here
     }
+
+
+
+
 
     public void setPrescriptionCode(String prescriptionCode) {
         this.prescriptionCode = prescriptionCode;
@@ -117,63 +125,114 @@ public class IndividualPrescription implements Initializable {
             PdfDocument pdf = new PdfDocument(writer);
             Document document = new Document(pdf);
 
-            document.add(new Paragraph("Prescription")
-                    .setBold().setFontSize(18).setUnderline());
+            // Title
+            document.add(new Paragraph("\n\n")); // Add some space at top
+            document.add(new Paragraph("MEDITRONIX")
+                    .setBold()
+                    .setFontSize(18)
+                    .setUnderline());
+
+            document.add(new Paragraph("Medical Management System")
+                    .setFontSize(8));
+
+            // Separator line
             document.add(new Paragraph("------------------------------------------------------------------------------------------------------------------------------")
-                    .setBold().setFontSize(12));
-            // Add patient details with specific styling
-            document.add(new Paragraph("Patient Name: " + patientNameLabel.getText())
-                    .setBold().setFontSize(12));
-            document.add(new Paragraph("Patient Age: " + patientAgeLabel.getText())
-                    .setBold().setFontSize(12));
-            document.add(new Paragraph("Patient Gender: " + patientGenderLabel.getText())
-                    .setBold().setFontSize(12));
+                    .setFontSize(12));
+
+            // Prescription Info
             document.add(new Paragraph("Prescription Code: " + presCode.getText())
-                    .setBold().setFontSize(12));
-            document.add(new Paragraph(" ").setMarginBottom(20)); // Add a blank line
+                    .setBold()
+                    .setFontSize(12));
 
-            // Create a table for medicine details with specific styling
+            document.add(new Paragraph("\n")); // Add space
+
+            // Patient Details
+            document.add(new Paragraph("Patient Information:")
+                    .setBold()
+                    .setFontSize(14)
+                    .setUnderline());
+
+            document.add(new Paragraph("Name: " + patientNameLabel.getText())
+                    .setFontSize(12));
+            document.add(new Paragraph("Age: " + patientAgeLabel.getText())
+                    .setFontSize(12));
+            document.add(new Paragraph("Gender: " + patientGenderLabel.getText())
+                    .setFontSize(12));
+
+            document.add(new Paragraph("\n")); // Add space
+
+            // Medicine Details Header
+            document.add(new Paragraph("Prescribed Medicines:")
+                    .setBold()
+                    .setFontSize(14)
+                    .setUnderline());
+
+            // Create medicine table
             Table table = new Table(4); // 4 columns
-            table.addCell(new Cell().add(new Paragraph("Medicine Name")
-                    .setBold().setFontSize(10)));
-            table.addCell(new Cell().add(new Paragraph("Dosage")
-                    .setBold().setFontSize(10)));
-            table.addCell(new Cell().add(new Paragraph("Quantity")
-                    .setBold().setFontSize(10)));
-            table.addCell(new Cell().add(new Paragraph("Frequency")
-                    .setBold().setFontSize(10)));
 
-            // Add medicine data to the table with specific styling
+            // Headers
+            table.addCell(new Cell().add(new Paragraph("Medicine Name")
+                    .setBold().setFontSize(12)));
+            table.addCell(new Cell().add(new Paragraph("Dosage")
+                    .setBold().setFontSize(12)));
+            table.addCell(new Cell().add(new Paragraph("Quantity")
+                    .setBold().setFontSize(12)));
+            table.addCell(new Cell().add(new Paragraph("Frequency")
+                    .setBold().setFontSize(12)));
+
+            // Add medicine data
             ObservableList<MedicineDataPrescription> medicineDataList = medTable.getItems();
             for (MedicineDataPrescription med : medicineDataList) {
                 table.addCell(new Cell().add(new Paragraph(med.getMedicineName())
-                        .setFontSize(10)));
+                        .setFontSize(11)));
                 table.addCell(new Cell().add(new Paragraph(med.getDosage())
-                        .setFontSize(10)));
+                        .setFontSize(11)));
                 table.addCell(new Cell().add(new Paragraph(String.valueOf(med.getQuantity()))
-                        .setFontSize(10)));
+                        .setFontSize(11)));
                 table.addCell(new Cell().add(new Paragraph(med.getFrequency())
-                        .setFontSize(10)));
+                        .setFontSize(11)));
             }
 
-            // Add table to the document
             document.add(table);
 
             // Add timestamp
+            document.add(new Paragraph("\n\n")); // Add space
             LocalDateTime now = LocalDateTime.now();
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             String timestamp = now.format(formatter);
-            document.add(new Paragraph("Downloaded on: " + timestamp).setFontSize(10));
+            document.add(new Paragraph("Generated on: " + timestamp)
+                    .setFontSize(10));
 
             // Close the document
             document.close();
 
             System.out.println("PDF created successfully");
+
+            // Open PDF automatically
+            try {
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(file);
+                } else {
+                    showErrorAlert("Desktop is not supported. Please open the PDF manually.");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                showErrorAlert("Could not open PDF automatically. Please open it manually.");
+            }
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
+            showErrorAlert("Error creating PDF: " + e.getMessage());
         }
     }
 
+    private void showErrorAlert(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     @FXML
     void backButtonPressed(ActionEvent event) {
@@ -188,6 +247,8 @@ public class IndividualPrescription implements Initializable {
             e.printStackTrace();
         }
     }
+
+
 
 
 }

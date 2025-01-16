@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -12,7 +11,7 @@
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="722" prefWidth="957" styleClass="createprescription-pane" stylesheets="@AllStylingDoctorsMenu.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.meditronix.CreatePrescriptionController">
    <children>
       <Button fx:id="backButton" layoutX="861.0" layoutY="646.0" mnemonicParsing="false" onAction="#backButtonPressed" prefHeight="36.0" prefWidth="71.0" styleClass="stylish-button" stylesheets="@AllStylingDoctorsMenu.css" text="Back" />
-      <TableView fx:id="MedicineTableview" layoutX="499.0" layoutY="275.0" prefHeight="346.0" prefWidth="433.0">
+      <TableView fx:id="MedicineTableview" layoutX="499.0" layoutY="318.0" prefHeight="313.0" prefWidth="433.0">
         <columns>
           <TableColumn fx:id="mednamecol" prefWidth="198.4000244140625" text="Name" />
           <TableColumn fx:id="meddosagecol" prefWidth="66.39996337890625" text="Dosage" />
@@ -20,83 +19,84 @@
             <TableColumn fx:id="medfreqcol" prefWidth="91.2000732421875" text="Frequency" />
         </columns>
       </TableView>
-      <Pane layoutX="44.0" layoutY="70.0" prefHeight="179.0" prefWidth="433.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
+      <Pane layoutX="46.0" layoutY="72.0" prefHeight="66.0" prefWidth="877.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
          <children>
-            <TextField fx:id="Age" layoutX="147.0" layoutY="97.0" onAction="#ageTfPressed" prefHeight="25.0" prefWidth="91.0" />
-            <TextField fx:id="Name" layoutX="147.0" layoutY="62.0" onAction="#nameTfPressed" prefHeight="25.0" prefWidth="205.0" />
-            <Label layoutX="36.0" layoutY="129.0" prefHeight="25.0" prefWidth="91.0" text="Gender">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <Label layoutX="38.0" layoutY="62.0" prefHeight="25.0" prefWidth="62.0" text="Name">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <Label layoutX="38.0" layoutY="14.0" prefHeight="25.0" prefWidth="144.0" text="Enter Patient Info">
+            <Label layoutX="35.0" layoutY="21.0" prefHeight="25.0" prefWidth="163.0" text="Enter Patient Username">
                <font>
                   <Font name="Berlin Sans FB" size="15.0" />
                </font>
             </Label>
-            <Label layoutX="38.0" layoutY="97.0" prefHeight="25.0" prefWidth="62.0" text="Age">
-               <font>
-                  <Font size="14.0" />
-               </font>
-            </Label>
-            <ComboBox fx:id="GenderCombobox" layoutX="147.0" layoutY="131.0" onAction="#genderCbPressed" prefHeight="21.0" prefWidth="136.0" />
-            <Button fx:id="Add" layoutX="337.0" layoutY="129.0" mnemonicParsing="false" onAction="#addPatient" prefHeight="29.0" prefWidth="57.0" stylesheets="@AllStylingDoctorsMenu.css" text="Add" />
+            <Button fx:id="Add" layoutX="731.0" layoutY="21.0" mnemonicParsing="false" onAction="#addPatient" prefHeight="25.0" prefWidth="91.0" stylesheets="@AllStylingDoctorsMenu.css" text="Add" />
+            <TextField fx:id="usernameTf" layoutX="293.0" layoutY="23.0" onAction="#usernameTfPressed" prefHeight="20.0" prefWidth="268.0" />
          </children>
       </Pane>
-      <Pane layoutX="499.0" layoutY="70.0" prefHeight="179.0" prefWidth="426.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
+      <Pane layoutX="48.0" layoutY="147.0" prefHeight="158.0" prefWidth="877.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
          <children>
-            <Label layoutX="36.0" layoutY="58.0" prefHeight="25.0" prefWidth="62.0" stylesheets="@AllStylingDoctorsMenu.css" text="Name">
+            <Label layoutX="32.0" layoutY="82.0" prefHeight="25.0" prefWidth="62.0" stylesheets="@AllStylingDoctorsMenu.css" text="Name:">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label layoutX="34.0" layoutY="22.0" text="Entered Patient Info:">
+            <Label layoutX="32.0" layoutY="12.0" text="Patient Info:">
                <font>
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <Label layoutX="35.0" layoutY="95.0" prefHeight="25.0" prefWidth="62.0" stylesheets="@AllStylingDoctorsMenu.css" text="Age:">
+            <Label layoutX="32.0" layoutY="117.0" prefHeight="25.0" prefWidth="62.0" stylesheets="@AllStylingDoctorsMenu.css" text="Age:">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label layoutX="34.0" layoutY="133.0" prefHeight="25.0" prefWidth="91.0" stylesheets="@AllStylingDoctorsMenu.css" text="Gender:">
+            <Label layoutX="461.0" layoutY="52.0" prefHeight="25.0" prefWidth="91.0" stylesheets="@AllStylingDoctorsMenu.css" text="Gender:">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label fx:id="enteredPatientName" layoutX="106.0" layoutY="62.0" prefHeight="21.0" prefWidth="144.0" stylesheets="@AllStylingDoctorsMenu.css" />
-            <Label fx:id="enteredPatientAge" layoutX="107.0" layoutY="97.0" prefHeight="21.0" prefWidth="144.0" stylesheets="@AllStylingDoctorsMenu.css" />
-            <Label fx:id="enteredPatientGender" layoutX="107.0" layoutY="134.0" prefHeight="21.0" prefWidth="144.0" stylesheets="@AllStylingDoctorsMenu.css" />
+            <Label fx:id="enteredPatientName" layoutX="127.0" layoutY="84.0" prefHeight="21.0" prefWidth="144.0" stylesheets="@AllStylingDoctorsMenu.css" />
+            <Label fx:id="enteredPatientAge" layoutX="127.0" layoutY="119.0" prefHeight="21.0" prefWidth="144.0" stylesheets="@AllStylingDoctorsMenu.css" />
+            <Label fx:id="enteredPatientGender" layoutX="573.0" layoutY="57.0" prefHeight="21.0" prefWidth="144.0" stylesheets="@AllStylingDoctorsMenu.css" />
+            <Label layoutX="32.0" layoutY="48.0" prefHeight="25.0" prefWidth="62.0" stylesheets="@AllStylingDoctorsMenu.css" text="Username:">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="enteredUsername" layoutX="127.0" layoutY="51.0" prefHeight="21.0" prefWidth="129.0" />
+            <Label layoutX="461.0" layoutY="82.0" prefHeight="25.0" prefWidth="91.0" stylesheets="@AllStylingDoctorsMenu.css" text="Contact:">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="461.0" layoutY="117.0" prefHeight="25.0" prefWidth="91.0" stylesheets="@AllStylingDoctorsMenu.css" text="E-mail:">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="enteredPatientContact" layoutX="572.0" layoutY="85.0" prefHeight="21.0" prefWidth="150.0" />
+            <Label fx:id="enteredPatientEmail" layoutX="573.0" layoutY="118.0" prefHeight="21.0" prefWidth="150.0" />
          </children>
       </Pane>
-      <Pane layoutX="46.0" layoutY="274.0" prefHeight="346.0" prefWidth="433.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
+      <Pane layoutX="51.0" layoutY="316.0" prefHeight="313.0" prefWidth="420.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
          <children>
-            <Label layoutX="33.0" layoutY="252.0" text="Frequency" />
-            <Button fx:id="removeMedicineButton" layoutX="144.0" layoutY="310.0" mnemonicParsing="false" onAction="#removeMedicine" prefHeight="25.0" prefWidth="129.0" text="Remove Medicine" />
-            <Label layoutX="35.0" layoutY="14.0" prefHeight="25.0" prefWidth="170.0" text="Prescribe Medicines">
+            <Label layoutX="37.0" layoutY="224.0" text="Frequency" />
+            <Button fx:id="removeMedicineButton" layoutX="148.0" layoutY="273.0" mnemonicParsing="false" onAction="#removeMedicine" prefHeight="25.0" prefWidth="121.0" text="Remove Medicine" />
+            <Label layoutX="38.0" layoutY="14.0" prefHeight="25.0" prefWidth="170.0" text="Prescribe Medicines">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </Label>
-            <Button fx:id="addMedicineButton" layoutX="14.0" layoutY="309.0" mnemonicParsing="false" onAction="#addMedicine" prefHeight="25.0" prefWidth="117.0" text="Add Medicine" />
-            <Button fx:id="stopPrescriptionButton" layoutX="282.0" layoutY="310.0" mnemonicParsing="false" onAction="#stopPrescription" prefHeight="25.0" prefWidth="129.0" text="Create Prescription" />
-            <Label fx:id="MedicineCountLabel" layoutX="35.0" layoutY="55.0" prefHeight="17.0" prefWidth="150.0" text="Medicine Count: 0" />
-            <Label layoutX="33.0" layoutY="202.0" text="Quantity" />
-            <Label layoutX="36.0" layoutY="94.0" text="Name" />
-            <Label layoutX="34.0" layoutY="148.0" text="Dosage" />
-            <TextField fx:id="Frequency" layoutX="145.0" layoutY="248.0" onAction="#frequencyTfPressed" prefHeight="25.0" prefWidth="227.0" />
-            <TextField fx:id="Quantity" layoutX="144.0" layoutY="197.0" onAction="#quantityTfPressed" prefHeight="25.0" prefWidth="227.0" />
-            <TextField fx:id="MedicineName" layoutX="144.0" layoutY="90.0" onAction="#medicineNameTfPressed" prefHeight="25.0" prefWidth="227.0" styleClass="text-field" stylesheets="@AllStylingDoctorsMenu.css" />
-            <TextField fx:id="Dosage" layoutX="143.0" layoutY="144.0" onAction="#dosageTfPressed" prefHeight="25.0" prefWidth="227.0" />
+            <Button fx:id="addMedicineButton" layoutX="33.0" layoutY="273.0" mnemonicParsing="false" onAction="#addMedicine" prefHeight="25.0" prefWidth="99.0" text="Add Medicine" />
+            <Button fx:id="stopPrescriptionButton" layoutX="283.0" layoutY="273.0" mnemonicParsing="false" onAction="#stopPrescription" prefHeight="25.0" prefWidth="117.0" text="Create Prescription" />
+            <Label fx:id="MedicineCountLabel" layoutX="37.0" layoutY="50.0" prefHeight="17.0" prefWidth="150.0" text="Medicine Count: 0" />
+            <Label layoutX="37.0" layoutY="176.0" text="Quantity" />
+            <Label layoutX="37.0" layoutY="82.0" text="Name" />
+            <Label layoutX="37.0" layoutY="129.0" text="Dosage" />
+            <TextField fx:id="Frequency" layoutX="144.0" layoutY="218.0" onAction="#frequencyTfPressed" prefHeight="25.0" prefWidth="227.0" />
+            <TextField fx:id="Quantity" layoutX="144.0" layoutY="171.0" onAction="#quantityTfPressed" prefHeight="25.0" prefWidth="227.0" />
+            <TextField fx:id="MedicineName" layoutX="144.0" layoutY="76.0" onAction="#medicineNameTfPressed" prefHeight="25.0" prefWidth="227.0" styleClass="text-field" stylesheets="@AllStylingDoctorsMenu.css" />
+            <TextField fx:id="Dosage" layoutX="144.0" layoutY="123.0" onAction="#dosageTfPressed" prefHeight="25.0" prefWidth="227.0" />
          </children>
       </Pane>
-      <Pane layoutX="46.0" layoutY="639.0" prefHeight="51.0" prefWidth="433.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
+      <Pane layoutX="46.0" layoutY="640.0" prefHeight="51.0" prefWidth="433.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
          <children>
             <Label layoutX="14.0" layoutY="15.0" prefHeight="21.0" prefWidth="205.0" text="Generate Prescription Code">
                <font>
