@@ -34,7 +34,7 @@
       </Pane>
       <Pane layoutX="106.0" layoutY="111.0" prefHeight="121.0" prefWidth="741.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
          <children>
-            <Label layoutX="25.0" layoutY="42.0" text="Search Patient by Name">
+            <Label layoutX="22.0" layoutY="44.0" prefHeight="19.0" prefWidth="192.0" text="Search Patient by Username">
                <font>
                   <Font name="System Bold" size="16.0" />
                </font>

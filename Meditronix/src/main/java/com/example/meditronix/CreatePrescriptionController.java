@@ -34,8 +34,6 @@ public class CreatePrescriptionController {
     private Stage stage;
     private Scene scene;
 
-    @FXML
-    private TextField Age;
 
     @FXML
     private TextField Dosage;
@@ -44,13 +42,8 @@ public class CreatePrescriptionController {
     private TextField Frequency;
 
     @FXML
-    private ComboBox<String> GenderCombobox;
-
-    @FXML
     private TextField MedicineName;
 
-    @FXML
-    private TextField Name;
 
     @FXML
     private TextField Quantity;
@@ -123,6 +116,10 @@ public class CreatePrescriptionController {
     private String ageText;
     private String gender;
 
+    private String contact;
+
+    private String email;
+
     @FXML
     private Label enteredPatientAge;
 
@@ -132,7 +129,31 @@ public class CreatePrescriptionController {
     @FXML
     private Label enteredPatientName;
 
+    @FXML
+    private Label enteredUsername;
+
     private boolean patientHasCreated = false;
+
+    @FXML
+    private TextField usernameTf;
+
+    private String username;
+
+    @FXML
+    private Button Add;
+
+
+    @FXML
+    private Label enteredPatientContact;
+
+    @FXML
+    private Label enteredPatientEmail;
+
+    @FXML
+    private Button remove;
+
+
+
 
     LocalDateTime now = LocalDateTime.now();
 
@@ -149,6 +170,55 @@ public class CreatePrescriptionController {
     {
         return prescriptionCode;
     }
+
+    //16-1-25-rumman (lines 160-203)
+
+    @FXML
+    void usernameTfPressed(ActionEvent event) {
+        username = usernameTf.getText().trim();
+
+        if (username.isEmpty()) {
+            showErrorAlert("Please enter a username.");
+            return;
+        }
+
+        try {
+            Database.PatientInfo patientInfo = database.getPatientInfoByUsername(username);
+
+            if (patientInfo != null) {
+                // Update the UI labels with patient information
+                enteredUsername.setText(username);
+                enteredPatientName.setText(patientInfo.getName());
+                enteredPatientAge.setText(String.valueOf(patientInfo.getAge()));
+                enteredPatientGender.setText(patientInfo.getGender());
+                enteredPatientContact.setText(patientInfo.getContact());
+                enteredPatientEmail.setText(patientInfo.getEmail());
+
+                // Store the values for later use
+                name = patientInfo.getName();
+                ageText = String.valueOf(patientInfo.getAge());
+                gender = patientInfo.getGender();
+                contact = patientInfo.getContact();
+                email = patientInfo.getEmail();
+
+                patientHasCreated = true;
+                // Remove the automatic disabling of Add button
+                // Add.setDisable(true);
+
+            } else {
+                showErrorAlert("No patient found with this username.");
+                //clearPatientLabels();
+                patientHasCreated = false;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showErrorAlert("Database error: " + e.getMessage());
+            //clearPatientLabels();
+            patientHasCreated = false;
+        }
+    }
+
 
 
     @FXML
@@ -180,14 +250,6 @@ public class CreatePrescriptionController {
         clearMedicineFields();
     }
 
-
-
-
-    private void clearInputFields() {
-    Name.clear();
-    //Age.clear();
-    //GenderCombobox.clear();
-    }
     private boolean validateMedicineFields(String name, String dosage, String quantity, String frequency) {
         return !name.isEmpty() && !dosage.isEmpty() && !quantity.isEmpty() && !frequency.isEmpty();
     }
@@ -213,85 +275,48 @@ public class CreatePrescriptionController {
 
     @FXML
     void addPatient(ActionEvent event) {
-        name = Name.getText();
-        String ageText = Age.getText();
-        String gender = GenderCombobox.getSelectionModel().getSelectedItem();
+        String username = usernameTf.getText().trim();
 
-        if (validatePatientFields(name, ageText, gender) && !patientHasCreated) {
-            // Update the labels with the entered patient information
-            enteredPatientName.setText(name);
-            enteredPatientAge.setText(ageText);
-            enteredPatientGender.setText(gender);
-
-            patientHasCreated = true;
-
-            clearInputFields();
+        if (username.isEmpty()) {
+            showErrorAlert("Please enter a username first.");
+            return;
         }
-        else if(patientHasCreated) {
-            showErrorAlert("You can only provide 1 patient's information.");
-        }else {
-            showErrorAlert("Please fill in all patient details correctly.");
-        }
-    }
 
-    private boolean validatePatientFields(String name, String age, String gender) {
-        return isValidName(name) && isValidAge(age) && isValidGender(gender);
-    }
+        try {
+            Database.PatientInfo patientInfo = database.getPatientInfoByUsername(username);
+
+            if (patientInfo != null) {
+                // Update the UI labels with new patient information
+                enteredUsername.setText(username);
+                enteredPatientName.setText(patientInfo.getName());
+                enteredPatientAge.setText(String.valueOf(patientInfo.getAge()));
+                enteredPatientGender.setText(patientInfo.getGender());
+                enteredPatientContact.setText(patientInfo.getContact());
+                enteredPatientEmail.setText(patientInfo.getEmail());
 
 
+                // Store the new values
+                name = patientInfo.getName();
+                ageText = String.valueOf(patientInfo.getAge());
+                gender = patientInfo.getGender();
+                contact = patientInfo.getContact();
+                email = patientInfo.getEmail();
 
+                patientHasCreated = true;
 
-    private boolean isValidName(String name) {
-        return !name.matches(".*\\d.*") && name.matches("[a-zA-Z ]+");
-    }
-
-    private boolean isValidGender(String gender) {
-        return gender.equals("Male") || gender.equals("Female");
-    }
-
-    @FXML
-    void nameTfPressed(ActionEvent event) {
-        String nameText = Name.getText();
-
-        if (!isValidName(nameText)) {
-            showErrorAlert("Patient name cannot contain numerical values.");
-            Name.clear(); // Clear the invalid input
-        } else {
-            System.out.println("Name: " + nameText);
-        }
-    }
-
-    @FXML
-    void genderCbPressed(ActionEvent event) {
-        String selectedGender = GenderCombobox.getSelectionModel().getSelectedItem();
-        if (selectedGender != null) {
-            if (!isValidGender(selectedGender)) {
-                showErrorAlert("Invalid gender selected.");
+                showNotification("Patient information updated successfully.");
             } else {
-                System.out.println("Selected Gender: " + selectedGender);
+                showErrorAlert("No patient found with this username.");
+                //clearPatientLabels();
+                patientHasCreated = false;
             }
-        } else {
-            showErrorAlert("Please select a gender.");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showErrorAlert("Database error: " + e.getMessage());
+            //clearPatientLabels();
+            patientHasCreated = false;
         }
     }
-
-    @FXML
-    void ageTfPressed(ActionEvent event) {
-        String ageText = Age.getText();
-
-        if (!isValidAge(ageText)) {
-            showErrorAlert("Please enter a valid age.");
-        }
-        else{
-            System.out.println("Age: " + ageText);
-        }
-    }
-
-    private boolean isValidAge(String age) {
-        return age.matches("\\d{1,3}") && Integer.parseInt(age) >= 0;
-    }
-
-
 
 
 
@@ -464,42 +489,50 @@ public class CreatePrescriptionController {
             showErrorAlert("Please add medicine before creating a prescription.");
             return;
         }
-        else if(!patientHasCreated)
-        {
+        else if(enteredPatientEmail.getText()== "") {
             showErrorAlert("Please add patient info before making prescription.");
             return;
         }
 
+        try {
+            // Generate prescription code
+            prescriptionCode = generatePrescriptionCode();
 
-        // Generate prescription code
-        prescriptionCode = generatePrescriptionCode();
-
-        showNotification("Prescription has been created. Prescription Code: " + prescriptionCode.toLowerCase());
-
-        System.out.println("Prescription Code: " + prescriptionCode.toLowerCase());
-
-        String ageText = Age.getText();
-        String gender = GenderCombobox.getSelectionModel().getSelectedItem();
-
-
-
-        // Create new table for prescription and insert patient data
-        database.createPrescriptionTable(prescriptionCode, name, now, ageText, gender);
-
-        // Insert medicine data into table
-        for (Medicine medicine : medicines) {
-            try {
-                int quantity = Integer.parseInt(medicine.getQuantity());
-                database.insertMedicineData(prescriptionCode, medicine.getName(), medicine.getDosage(), quantity, medicine.getFrequency(), now);
-            } catch (NumberFormatException e) {
-                showErrorAlert("Quantity must be a valid integer.");
+            // Get patient's ID from patient_info table
+            String patientId = database.getPatientId(usernameTf.getText().trim());
+            if (patientId == null) {
+                showErrorAlert("Could not retrieve patient ID.");
+                return;
             }
-        }
 
-        medicines.clear();
-        medicineCount = 0;
-        if (medicineCount >= 0) {
-            MedicineCountLabel.setText("Medicine Count: " + medicineCount);
+            // Create patient-specific prescription history table and add new prescription
+            database.addPrescriptionToPatientHistory(patientId, prescriptionCode, now, username);
+
+            showNotification("Prescription has been created. Prescription Code: " + prescriptionCode.toLowerCase());
+            System.out.println("Prescription Code: " + prescriptionCode.toLowerCase());
+
+            // Create new table for prescription and insert patient data
+            database.createPrescriptionTable(prescriptionCode, name, now, ageText, gender);
+
+            // Insert medicine data into table
+            for (Medicine medicine : medicines) {
+                try {
+                    int quantity = Integer.parseInt(medicine.getQuantity());
+                    database.insertMedicineData(prescriptionCode, medicine.getName(),
+                            medicine.getDosage(), quantity, medicine.getFrequency(), now);
+                } catch (NumberFormatException e) {
+                    showErrorAlert("Quantity must be a valid integer.");
+                }
+            }
+
+            medicines.clear();
+            medicineCount = 0;
+            if (medicineCount >= 0) {
+                MedicineCountLabel.setText("Medicine Count: " + medicineCount);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showErrorAlert("Error creating prescription: " + e.getMessage());
         }
     }
 
@@ -607,11 +640,84 @@ public class CreatePrescriptionController {
         }
     }
 
+    private List<String> getUsernameSuggestions(String input) {
+        List<String> suggestions = new ArrayList<>();
+        try (Connection con = database.dbConnect()) {
+            String query = "SELECT username FROM patient_info WHERE username LIKE '" + input + "%'";
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                String username = rs.getString("username");
+                suggestions.add(username);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return suggestions;
+    }
+
+    private ListView<String> suggestionsListView;
+
+    private void showUsernameSuggestions(List<String> suggestions) {
+        if (suggestionsListView != null) {
+            ((Pane) usernameTf.getParent()).getChildren().remove(suggestionsListView);
+        }
+
+        suggestionsListView = new ListView<>();
+        suggestionsListView.setItems(FXCollections.observableArrayList(suggestions));
+
+        suggestionsListView.setPrefWidth(usernameTf.getWidth());
+        suggestionsListView.setPrefHeight(Math.min(100, suggestions.size() * 24)); // 24 pixels per item
+        suggestionsListView.setLayoutX(usernameTf.getLayoutX());
+        suggestionsListView.setLayoutY(usernameTf.getLayoutY() + usernameTf.getHeight());
+
+        // Add mouse click handler
+        suggestionsListView.setOnMouseClicked(event -> {
+            String selectedSuggestion = suggestionsListView.getSelectionModel().getSelectedItem();
+            if (selectedSuggestion != null) {
+                usernameTf.setText(selectedSuggestion);
+                hideUsernameSuggestions();
+                // Trigger the username search
+                ActionEvent actionEvent = new ActionEvent(usernameTf, null);
+                usernameTfPressed(actionEvent);
+                // Return focus to the text field
+                usernameTf.requestFocus();
+            }
+        });
+
+        // Add keyboard navigation
+        suggestionsListView.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String selectedSuggestion = suggestionsListView.getSelectionModel().getSelectedItem();
+                if (selectedSuggestion != null) {
+                    usernameTf.setText(selectedSuggestion);
+                    hideUsernameSuggestions();
+                    // Trigger the username search
+                    ActionEvent actionEvent = new ActionEvent(usernameTf, null);
+                    usernameTfPressed(actionEvent);
+                    // Return focus to the text field
+                    usernameTf.requestFocus();
+                }
+            }
+        });
+
+        ((Pane) usernameTf.getParent()).getChildren().add(suggestionsListView);
+
+        // Keep focus on the text field
+        usernameTf.requestFocus();
+    }
+
+    private void hideUsernameSuggestions() {
+        if (suggestionsListView != null) {
+            ((Pane) usernameTf.getParent()).getChildren().remove(suggestionsListView);
+            suggestionsListView = null;
+        }
+    }
 
     @FXML
     public void initialize() {
         // ComboBox options
-        GenderCombobox.getItems().addAll("Male", "Female");
+        //GenderCombobox.getItems().addAll("Male", "Female");
         //GenderCombobox.getSelectionModel().selectFirst();
 
         // medicine TableView
@@ -649,6 +755,46 @@ public class CreatePrescriptionController {
             }
         });
 
+        usernameTf.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.isEmpty()) {
+                List<String> suggestions = getUsernameSuggestions(newValue);
+                if (!suggestions.isEmpty()) {
+                    showUsernameSuggestions(suggestions);
+                } else {
+                    hideUsernameSuggestions();
+                }
+            } else {
+                hideUsernameSuggestions();
+            }
+            // Ensure text field keeps focus
+            usernameTf.requestFocus();
+        });
+
+        // Update focus listener for username TextField
+        usernameTf.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {  // If focus is lost
+                // Add a small delay before hiding suggestions to allow for mouse clicks
+                javafx.application.Platform.runLater(() -> {
+                    if (suggestionsListView != null &&
+                            !suggestionsListView.isFocused() &&
+                            !suggestionsListView.isHover()) {
+                        hideUsernameSuggestions();
+                    }
+                });
+            }
+        });
+
+        // Add keyboard navigation for username TextField
+        usernameTf.setOnKeyPressed(event -> {
+            if (suggestionsListView != null) {
+                if (event.getCode() == KeyCode.DOWN) {
+                    suggestionsListView.requestFocus();
+                    suggestionsListView.getSelectionModel().select(0);
+                }
+            }
+        });
+
     }
 
 }
+

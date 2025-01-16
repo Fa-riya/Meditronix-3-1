@@ -37,8 +37,8 @@
       </Pane>
       <Pane layoutX="54.0" layoutY="84.0" prefHeight="126.0" prefWidth="828.0" styleClass="transparent-pane1" stylesheets="@AllStylingDoctorsMenu.css">
          <children>
-            <Label fx:id="presCode" layoutX="581.0" layoutY="87.0" prefHeight="17.0" prefWidth="103.0" />
-            <Label layoutX="470.0" layoutY="85.0" prefHeight="24.0" prefWidth="114.0" text="Prescription Code:">
+            <Label fx:id="presCode" layoutX="498.0" layoutY="20.0" prefHeight="17.0" prefWidth="103.0" />
+            <Label layoutX="369.0" layoutY="16.0" prefHeight="24.0" prefWidth="114.0" text="Prescription Code:">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
@@ -48,7 +48,7 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label layoutX="14.0" layoutY="16.0" prefHeight="24.0" prefWidth="103.0" text="Patient's Name: ">
+            <Label layoutX="14.0" layoutY="16.0" prefHeight="24.0" prefWidth="172.0" text="Name: ">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
@@ -58,8 +58,8 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
+            <Button fx:id="dnldPDF" layoutX="676.0" layoutY="66.0" mnemonicParsing="false" onAction="#downloadPDF" prefHeight="42.0" prefWidth="138.0" styleClass="stylish-button" stylesheets="@AllStylingDoctorsMenu.css" text="Download PDF" />
          </children>
       </Pane>
-      <Button fx:id="dnldPDF" layoutX="745.0" layoutY="225.0" mnemonicParsing="false" onAction="#downloadPDF" prefHeight="42.0" prefWidth="138.0" styleClass="stylish-button" stylesheets="@AllStylingDoctorsMenu.css" text="Download PDF" />
    </children>
 </Pane>

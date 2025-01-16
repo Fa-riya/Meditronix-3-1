@@ -13,6 +13,7 @@ import javafx.util.Duration;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -795,6 +796,163 @@ public class Database {
         return dosages;
     }
 
+
+    //16/1/2025-rumman (from here till end)
+    public PatientInfo getPatientInfoByUsername(String username) throws SQLException {
+        String sql = "SELECT name, date_of_birth, gender, contact_number, email FROM patient_info WHERE username = ?";
+
+        try (Connection con = dbConnect();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String name = rs.getString("name");
+                String dateOfBirth = rs.getString("date_of_birth");
+                String gender = rs.getString("gender");
+                String contact = rs.getString("contact_number");
+                String email = rs.getString("email");
+
+                // Calculate age from date_of_birth
+                int age = calculateAge(dateOfBirth);
+
+                return new PatientInfo(name, age, gender, contact, email);
+            }
+            return null;
+        }
+    }
+
+    private int calculateAge(String dateOfBirth) {
+        LocalDate birthDate = LocalDate.parse(dateOfBirth);
+        LocalDate currentDate = LocalDate.now();
+        return Period.between(birthDate, currentDate).getYears();
+    }
+
+    // Simplified PatientInfo class
+    public class PatientInfo {
+        private String name;
+        private int age;
+        private String gender;
+
+        private String contact;
+
+        private String email;
+
+        public PatientInfo(String name, int age, String gender, String contact, String email) {
+            this.name = name;
+            this.age = age;
+            this.gender = gender;
+            this.contact = contact;
+            this.email = email;
+        }
+
+        public String getName() { return name; }
+        public int getAge() { return age; }
+        public String getGender() { return gender; }
+        public String getContact() { return contact; }
+        public String getEmail() { return email; }
+    }
+
+    public String getPatientId(String username) throws SQLException {
+        String sql = "SELECT id FROM patient_info WHERE username = ?";
+
+        try (Connection con = dbConnect();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("id");
+            }
+            return null;
+        }
+    }
+
+    public void addPrescriptionToPatientHistory(String patientId, String prescriptionCode, LocalDateTime generationTime, String username) throws SQLException {
+        // First create the table if it doesn't exist
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS " + patientId + "_prescriptions ("
+                + "prescription_code VARCHAR(255) PRIMARY KEY,"
+                + "generation_time DATETIME,"
+                + "username VARCHAR(255)"  // Remove the comma after DATETIME and add username column
+                + ")";
+
+        String insertSQL = "INSERT INTO " + patientId + "_prescriptions "
+                + "(prescription_code, generation_time, username) VALUES (?, ?, ?)";
+
+        try (Connection con = dbConnect()) {
+            // Create table if not exists
+            try (Statement stmt = con.createStatement()) {
+                stmt.executeUpdate(createTableSQL);
+            }
+
+            // Insert new prescription record
+            try (PreparedStatement pstmt = con.prepareStatement(insertSQL)) {
+                pstmt.setString(1, prescriptionCode.toLowerCase());
+                pstmt.setTimestamp(2, java.sql.Timestamp.valueOf(generationTime));
+                pstmt.setString(3, username);  // Add the username parameter
+                pstmt.executeUpdate();
+            }
+        }
+    }
+
+
+    public List<Prescription> getPrescriptionsByPatientId(String patientId) throws SQLException {
+        List<Prescription> prescriptions = new ArrayList<>();
+        String tableName =  patientId + "_prescriptions";
+
+        // First check if the table exists
+        if (!doesTableExist(tableName)) {
+            return prescriptions; // Return empty list if table doesn't exist
+        }
+
+        String sql = "SELECT prescription_code, generation_time FROM " + tableName +
+                " ORDER BY generation_time DESC";
+
+        try (Connection con = dbConnect();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                String code = rs.getString("prescription_code");
+                Timestamp timestamp = rs.getTimestamp("generation_time");
+
+                // Convert timestamp to separate date and time
+                Date date = new Date(timestamp.getTime());
+                Time time = new Time(timestamp.getTime());
+
+                prescriptions.add(new Prescription(code, date, time));
+            }
+        }
+
+        return prescriptions;
+    }
+
+    private boolean doesTableExist(String tableName) throws SQLException {
+        try (Connection con = dbConnect()) {
+            DatabaseMetaData meta = con.getMetaData();
+            ResultSet rs = meta.getTables(null, null, tableName, new String[] {"TABLE"});
+            return rs.next();
+        }
+    }
+
+    // If you need to get suggestions for usernames (optional feature)
+    public List<String> getUsernameSuggestions(String partial) throws SQLException {
+        List<String> suggestions = new ArrayList<>();
+        String sql = "SELECT username FROM patient_info WHERE username LIKE ?";
+
+        try (Connection con = dbConnect();
+             PreparedStatement pstmt = con.prepareStatement(sql)) {
+            pstmt.setString(1, partial + "%");
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                suggestions.add(rs.getString("username"));
+            }
+        }
+
+        return suggestions;
+    }
 
 
 
