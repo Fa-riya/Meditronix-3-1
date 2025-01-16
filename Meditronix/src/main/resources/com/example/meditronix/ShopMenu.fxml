@@ -93,14 +93,15 @@
       </MenuBar>
       <TableView fx:id="inventoryTable" layoutX="121.0" layoutY="35.0" prefHeight="516.0" prefWidth="866.0" AnchorPane.topAnchor="36.0">
         <columns>
-          <TableColumn fx:id="Name" prefWidth="159.1999969482422" text="Name" />
-          <TableColumn fx:id="Dose" prefWidth="98.4000244140625" text="Dose" />
-            <TableColumn fx:id="Price" prefWidth="100.0" text="Price/Tk" />
-            <TableColumn fx:id="Expiry" prefWidth="100.0" text="Expiry" />
+          <TableColumn fx:id="Name" prefWidth="142.40003967285156" text="Name" />
+            <TableColumn fx:id="GenericDrugName" prefWidth="106.4000244140625" text="Generic Name" />
+          <TableColumn fx:id="Dose" prefWidth="91.199951171875" text="Dose" />
+            <TableColumn fx:id="Expiry" prefWidth="93.60003662109375" text="Expiry" />
             <TableColumn fx:id="Type" prefWidth="90.0" text="Type" />
             <TableColumn fx:id="Quantity" prefWidth="90.0" text="Quantity" />
             <TableColumn fx:id="UnitCost" prefWidth="100.0" text="Unit Cost" />
             <TableColumn fx:id="Status" prefWidth="122.39990234375" text="Status" />
+            <TableColumn fx:id="Price" prefWidth="100.0" text="Price/Tk" />
         </columns>
       </TableView>
       <VBox fx:id="vpanel" layoutY="35.0" prefHeight="685.0" prefWidth="120.0" AnchorPane.topAnchor="35.0">

@@ -5,6 +5,8 @@ import java.sql.SQLException;
 
 public class Medicine {
     private String Name;
+
+    private String generic_drug_name;
     private String Dose;
     private String Expiry;
     private String Type;
@@ -16,7 +18,7 @@ public class Medicine {
 
     private String serial_id;
 
-    public Medicine(String name, String dose, String expiry, String type, Float price, Float quantity, Float unitCost) {
+    public Medicine(String name,String generic_drug_name, String dose, String expiry, String type, Float price, Float quantity, Float unitCost) {
         this.Name = name;
         this.Dose = dose;
         this.Expiry = expiry;
@@ -24,6 +26,7 @@ public class Medicine {
         this.price = price;
         this.Quantity = quantity;
         this.UnitCost = unitCost;
+        this.generic_drug_name = generic_drug_name;
 
         //set to a default status since status is handled on a system level
         this.status = "Undefined";
@@ -46,7 +49,7 @@ public class Medicine {
         this.Quantity = rs.getFloat("Available_Quantity");
         this.UnitCost = rs.getFloat("unit_cost");
         this.serial_id = rs.getString("serial_id");
-
+        this.generic_drug_name = rs.getString("generic_drug_name");
         //set to a default status since status is handled on a system level
         this.status = "Undefined";
     }
@@ -89,4 +92,8 @@ public class Medicine {
 
     public void setStatus(String s){this.status = s;}
     public void setQuantity(float quantity) { this.Quantity = quantity; }
+
+    public String getGeneric_drug_name() {
+        return generic_drug_name;
+    }
 }

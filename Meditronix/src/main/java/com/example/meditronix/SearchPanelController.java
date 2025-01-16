@@ -57,7 +57,7 @@ public class SearchPanelController implements Initializable {
 
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     ObservableList<String> Units = FXCollections.observableArrayList(
-            Arrays.asList(units)
+            Arrays.asList(GenericDrugsList.dosageUnits)
     );
 
     @Override

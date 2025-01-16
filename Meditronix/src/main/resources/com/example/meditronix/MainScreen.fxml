@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="510.0" prefWidth="768.0" style="-fx-background-radius: 30; -fx-border-radius: 30;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.meditronix.MainScreen">
+<AnchorPane prefHeight="510.0" prefWidth="763.0" style="-fx-background-radius: 30; -fx-border-radius: 30;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.meditronix.MainScreen">
    <children>
       <VBox layoutX="10.0" layoutY="10.0" prefHeight="469.0" prefWidth="354.0" style="-fx-background-radius: 50; -fx-border-radius: 50;">
          <children>
@@ -25,7 +25,7 @@
       </VBox>
       <VBox layoutX="378.0" prefHeight="510.0" prefWidth="382.0">
          <children>
-            <AnchorPane prefHeight="510.0" prefWidth="394.0">
+            <AnchorPane prefHeight="510.0" prefWidth="397.0">
                <children>
                   <Label layoutX="127.0" layoutY="25.0" text="Log in as" textFill="#5b5959" textOverrun="WORD_ELLIPSIS">
                      <font>
@@ -59,7 +59,7 @@
                         </ImageView>
                      </graphic>
                   </Button>
-                  <Button fx:id="ShopOwnerButton" layoutX="255.0" layoutY="85.0" mnemonicParsing="false" onAction="#shopButtonPressed" prefHeight="46.0" prefWidth="126.0" style="-fx-border-radius: 50; -fx-background-radius: 10;" text="Shop Owner" AnchorPane.rightAnchor="-1.0">
+                  <Button fx:id="ShopOwnerButton" layoutX="255.0" layoutY="85.0" mnemonicParsing="false" onAction="#shopButtonPressed" prefHeight="46.0" prefWidth="124.0" style="-fx-border-radius: 50; -fx-background-radius: 10;" text="Shop Owner" AnchorPane.rightAnchor="2.0">
                      <graphic>
                         <ImageView fitHeight="22.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -75,13 +75,15 @@
                   <Label layoutX="32.0" layoutY="193.0" text="Enter Username" />
                   <Label layoutX="32.0" layoutY="255.0" text="Enter Password" />
                   <Button fx:id="login" layoutX="26.0" layoutY="342.0" mnemonicParsing="false" onAction="#login" prefHeight="26.0" prefWidth="322.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: #5DC1B5;" text="Log in" />
-                  <Label layoutX="116.0" layoutY="398.0" text="Don't have an account?" />
-                  <Button fx:id="signUp" layoutX="250.0" layoutY="394.0" mnemonicParsing="false" onAction="#signUpButtonPressed" style="-fx-background-radius: 20; -fx-border-radius: 20;" text="SignUp" />
+                  <Label layoutX="116.0" layoutY="424.0" text="Don't have an account?" />
+                  <Button fx:id="signUp" layoutX="250.0" layoutY="420.0" mnemonicParsing="false" onAction="#signUpButtonPressed" style="-fx-background-radius: 20; -fx-border-radius: 20;" text="SignUp" />
                   <Label fx:id="loginNotify" layoutX="32.0" layoutY="420.0" prefHeight="18.0" prefWidth="322.0" />
                   <PasswordField fx:id="passWordInput" layoutX="26.0" layoutY="283.0" prefHeight="26.0" prefWidth="322.0" promptText="Password" style="-fx-background-radius: 20; -fx-border-radius: 20;" />
                   <Separator layoutY="77.0" opacity="0.26" prefHeight="10.0" prefWidth="382.0" />
                   <Separator layoutX="-2.0" layoutY="130.0" opacity="0.35" prefHeight="10.0" prefWidth="382.0" />
                   <Separator layoutX="-3.0" orientation="VERTICAL" prefHeight="510.0" prefWidth="7.0" />
+                  <Separator layoutX="-4.0" layoutY="402.0" prefHeight="3.0" prefWidth="382.0" />
+                  <Button fx:id="genericMedLogInButton" layoutX="26.0" layoutY="464.0" mnemonicParsing="false" onAction="#switchToGenericMedPanel" prefHeight="26.0" prefWidth="322.0" style="-fx-background-radius: 20; -fx-border-radius: 20; -fx-background-color: #5DC1B5;" text="Purchase generic medicines" />
                </children>
             </AnchorPane>
          </children>

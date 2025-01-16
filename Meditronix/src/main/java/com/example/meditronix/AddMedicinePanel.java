@@ -2,6 +2,8 @@ package com.example.meditronix;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -22,9 +24,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import org.controlsfx.control.textfield.TextFields;
 
 public class AddMedicinePanel extends Pane implements Initializable {
     public Button addButton;
@@ -40,6 +44,10 @@ public class AddMedicinePanel extends Pane implements Initializable {
 
     @FXML
     private TextField SellCostField;
+
+
+    @FXML
+    private Spinner<String> addPanelUnitSelector;
 
     @FXML
     private ChoiceBox<String> typeList;
@@ -62,6 +70,11 @@ public class AddMedicinePanel extends Pane implements Initializable {
 
     private String selectedType;
 
+    private TextFields genericDrugAutoComplete;
+
+    @FXML
+    private TextField drugGenericNameField;
+
     private Connection con;
     private Database localDB;
 
@@ -75,8 +88,28 @@ public class AddMedicinePanel extends Pane implements Initializable {
         return stage;
     }
 
+    private final String[] units = {"","g","mg","ug","L","mL"};
+    ObservableList<String> Units = FXCollections.observableArrayList(
+            Arrays.asList(GenericDrugsList.dosageUnits)
+    );
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        SpinnerValueFactory<String> valueFactory = new SpinnerValueFactory.ListSpinnerValueFactory<>(
+                Units
+        );
+        // Set the factory to the spinner
+        addPanelUnitSelector.setValueFactory(valueFactory);
+        // Set the default value (optional)
+        addPanelUnitSelector.getValueFactory().setValue(Units.get(0));
+        // Add change listener
+        addPanelUnitSelector.valueProperty().addListener((obs, oldValue, newValue) -> {
+            // Your action here
+            System.out.println("Selected unit: " + newValue);
+        });
+
+          TextFields.bindAutoCompletion(drugGenericNameField,GenericDrugsList.genericDrugNames);
           typeList.getItems().addAll(types);
           typeList.setOnAction(this::returnType);
           localDB = ShopMenu.getInstance().getGlobalDB();
@@ -85,6 +118,7 @@ public class AddMedicinePanel extends Pane implements Initializable {
 
           BuyCostField.setText("0.0");
           doseField.setText("-");
+
 
     }
 
@@ -100,7 +134,7 @@ public class AddMedicinePanel extends Pane implements Initializable {
 
 
            Float buyingCost, sellingCost, quantityAdded;
-           String name, type, dose;
+           String name, type, dose,drugGenericName;
            LocalDate expiryDate;
            String date;
 
@@ -126,6 +160,7 @@ public class AddMedicinePanel extends Pane implements Initializable {
            }
            if (doseField.getText() != null) {
                dose = doseField.getText();
+               dose = dose + addPanelUnitSelector.getValue();
            } else {
                doseField.setText("_");
                dose = doseField.getText();
@@ -138,11 +173,13 @@ public class AddMedicinePanel extends Pane implements Initializable {
                type = typeList.getValue();
                sellingCost = Float.valueOf(SellCostField.getText());
                quantityAdded = Float.valueOf(QuantityField.getText());
+               drugGenericName = drugGenericNameField.getText();
 
-               Medicine medicine = new Medicine(name, dose, date, type, sellingCost, quantityAdded, buyingCost);
+               Medicine medicine = new Medicine(name,drugGenericName, dose, date, type, sellingCost, quantityAdded, buyingCost);
 
 
                localDB.addMedicine(medicine, con,warningLabel);
+
            } else {
                warningLabel.setText("Fields with * must be filled!");
 
@@ -164,6 +201,7 @@ public class AddMedicinePanel extends Pane implements Initializable {
                timeline.play();
            }
 
+           ShopMenu.getInstance().refreshList();
 
 
 

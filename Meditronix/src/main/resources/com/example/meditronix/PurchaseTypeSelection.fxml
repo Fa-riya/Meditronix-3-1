@@ -21,7 +21,7 @@
             </Button>
             <Label fx:id="welcomelabel" alignment="CENTER" layoutX="52.0" layoutY="56.0" prefHeight="52.0" prefWidth="734.0" stylesheets="@AllStyling.css" text="WELCOME TO THE MEDICAL STORE" textFill="WHITE">
                <font>
-                  <Font name="Berlin Sans FB" size="34.0" />
+                  <Font name="Berlin Sans FB" size="29.0" />
                </font>
                <styleClass>
                   <String fx:value="rounded-label1" />

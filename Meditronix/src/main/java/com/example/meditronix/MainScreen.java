@@ -37,6 +37,10 @@ public class MainScreen implements Initializable{
     @FXML
     private Button login;
 
+
+    @FXML
+    private Button genericMedLogInButton;
+
     @FXML
     private PasswordField passWordInput;
 
@@ -63,8 +67,8 @@ public class MainScreen implements Initializable{
     {
         state = "doctor";
         DoctorButton.setStyle("-fx-border-color: #09178f;" +
-                              "-fx-background-radius: 10;" +
-                               "-fx-border-radius: 10");
+                "-fx-background-radius: 10;" +
+                "-fx-border-radius: 10");
         ShopOwnerButton.setStyle("-fx-background-radius: 10");
         CustomerButton.setStyle("-fx-background-radius: 10");
     }
@@ -75,8 +79,8 @@ public class MainScreen implements Initializable{
         DoctorButton.setStyle("-fx-background-radius: 10");
         ShopOwnerButton.setStyle("-fx-background-radius: 10");
         CustomerButton.setStyle("-fx-border-color: #09178f;" +
-                                "-fx-border-radius: 10;" +
-                                "-fx-background-radius: 10");
+                "-fx-border-radius: 10;" +
+                "-fx-background-radius: 10");
     }
     @FXML
     public void setStage(Stage stage) {
@@ -87,8 +91,8 @@ public class MainScreen implements Initializable{
         state = "pharmacist";
         DoctorButton.setStyle("-fx-background-radius: 10");
         ShopOwnerButton.setStyle("-fx-border-color: #09178f;" +
-                                 "-fx-background-radius: 10;" +
-                                 "-fx-border-radius: 10");
+                "-fx-background-radius: 10;" +
+                "-fx-border-radius: 10");
         CustomerButton.setStyle("-fx-background-radius: 10");
     }
     @FXML
@@ -111,7 +115,7 @@ public class MainScreen implements Initializable{
         stage.setScene(scene);
         stage.show();
     }
- @FXML
+    @FXML
 
     public  void switchToInventory(ActionEvent event) throws IOException {
         Object root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("ShopMenu.fxml")));
@@ -132,6 +136,15 @@ public class MainScreen implements Initializable{
         stage.setScene(scene);
         stage.show();
 
+    }
+
+    public void switchToGenericMedPanel(ActionEvent event) throws  IOException {
+        Object root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("GenericPurchase.fxml")));
+
+        stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        scene = new Scene((Parent) root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     @FXML
@@ -174,10 +187,8 @@ public class MainScreen implements Initializable{
         System.out.println("Hashed value: " + hashedPassword);
 
         if (state.equals(role) && username.equals(returned_username) && hashedPassword.equals(returned_hashed_password)) {
-
             UserSession.getInstance().setUsername(returned_username);
             UserSession.getInstance().setRole(role);
-
             loginNotify.setStyle("-fx-text-fill: #36e036");
             loginNotify.setText("Access Granted!! Logging in.....");
             currentUser = returned_username;

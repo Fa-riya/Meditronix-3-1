@@ -7,13 +7,14 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="updatePanel" prefHeight="170.0" prefWidth="866.0" style="-fx-background-radius: 10; -fx-border-color: #FFC300; -fx-border-radius: 10; -fx-border-width: 2;" stylesheets="@ShopInventory.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.meditronix.UpdateMedicinePanel">
     <children>
-        <TextField fx:id="updateNameField" layoutX="50.0" layoutY="30.0" promptText="Set Name" />
-        <TextField fx:id="updateDoseField" layoutX="50.0" layoutY="73.0" promptText="Dose" />
+        <TextField fx:id="updateNameField" layoutX="50.0" layoutY="30.0" promptText="Update Name" />
+        <TextField fx:id="updateDoseField" layoutX="50.0" layoutY="73.0" promptText="Update Dose" />
         <TextField fx:id="updateBuyCostField" layoutX="274.0" layoutY="30.0" promptText="Buying cost per unit" />
-        <TextField fx:id="updateSellCostField" layoutX="274.0" layoutY="73.0" promptText="Set selling price" />
+        <TextField fx:id="updateSellCostField" layoutX="274.0" layoutY="73.0" promptText="Update selling price" />
         <TextField fx:id="updateQuantityField" layoutX="274.0" layoutY="115.0" promptText="Quantity bought" />
         <DatePicker fx:id="updateExpiryDateField" layoutX="500.0" layoutY="30.0" promptText="Expiry Date" />
         <Button fx:id="updateButton" layoutX="760.0" layoutY="127.0" mnemonicParsing="false" onAction="#updateMedicine" prefHeight="27.0" prefWidth="70.0" text="Update">
@@ -56,13 +57,19 @@
                 <Font size="10.0" />
             </font>
         </Label>
-        <Label fx:id="newWarningLabel" layoutX="500.0" layoutY="123.0" prefHeight="27.0" prefWidth="175.0" wrapText="true" />
-      <TextField fx:id="selectByIndexField" layoutX="500.0" layoutY="73.0" prefHeight="26.0" prefWidth="118.0" promptText="Select by index" />
-      <Button fx:id="searchByIndexBtn" layoutX="619.0" layoutY="73.0" mnemonicParsing="false" onAction="#showSelectedMed" prefHeight="27.0" prefWidth="58.0" style="-fx-background-radius: 5; -fx-border-radius: 5;" text="Select">
+        <Label fx:id="newWarningLabel" layoutX="682.0" layoutY="29.0" prefHeight="93.0" prefWidth="175.0" wrapText="true" />
+      <TextField fx:id="selectByIndexField" layoutX="500.0" layoutY="114.0" prefHeight="26.0" prefWidth="118.0" promptText="Select by index" />
+      <Button fx:id="searchByIndexBtn" layoutX="618.0" layoutY="113.0" mnemonicParsing="false" onAction="#showSelectedMed" prefHeight="27.0" prefWidth="58.0" style="-fx-background-radius: 5; -fx-border-radius: 5;" text="Select">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
+      <TextField fx:id="updateGenericNameField" layoutX="500.0" layoutY="73.0" prefHeight="26.0" prefWidth="175.0" promptText="Update drug name" />
+      <Text layoutX="502.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Generic drug name">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Text>
 
     </children>
 </AnchorPane>

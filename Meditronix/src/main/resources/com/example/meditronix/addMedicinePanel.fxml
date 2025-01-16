@@ -4,14 +4,16 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="addPanel" prefHeight="170.0" prefWidth="866.0" style="-fx-background-radius: 10; -fx-border-color: #118ab2; -fx-border-radius: 10; -fx-border-width: 2;" stylesheets="@ShopInventory.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.meditronix.AddMedicinePanel">
    <children>
       <TextField fx:id="nameField" layoutX="50.0" layoutY="30.0" promptText="Set Name" />
-      <TextField fx:id="doseField" layoutX="50.0" layoutY="73.0" promptText="Dose" />
+      <TextField fx:id="doseField" layoutX="50.0" layoutY="73.0" prefHeight="26.0" prefWidth="66.0" promptText="Dose" />
       <TextField fx:id="BuyCostField" layoutX="274.0" layoutY="30.0" promptText="Buying cost per unit" />
       <TextField fx:id="SellCostField" layoutX="274.0" layoutY="73.0" promptText="Set selling price" />
       <TextField fx:id="QuantityField" layoutX="274.0" layoutY="115.0" promptText="Quantity bought" />
@@ -57,6 +59,18 @@
          </font>
       </Label>
       <Label fx:id="warningLabel" layoutX="500.0" layoutY="79.0" prefHeight="58.0" prefWidth="271.0" />
+      <TextField fx:id="drugGenericNameField" layoutX="500.0" layoutY="73.0" prefHeight="26.0" prefWidth="175.0" promptText="Generic name of drug" />
+      <Text layoutX="501.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Drug name">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Text>
+      <Spinner fx:id="addPanelUnitSelector" layoutX="116.0" layoutY="73.0" prefHeight="26.0" prefWidth="75.0" />
+      <Text layoutX="134.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Unit">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Text>
       
    </children>
 </AnchorPane>

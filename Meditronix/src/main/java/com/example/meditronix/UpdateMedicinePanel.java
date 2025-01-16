@@ -9,6 +9,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
+import org.controlsfx.control.textfield.TextFields;
 
 import java.net.URL;
 import java.sql.Connection;
@@ -55,12 +56,16 @@ public class UpdateMedicinePanel implements Initializable {
     @FXML
     private TextField selectByIndexField;
 
+    @FXML
+    private TextField updateGenericNameField;
+
     private final String[] types = {"Prescription","Generic"};
     
     Connection con ;
     Database localDB;
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         updateTypeList.getItems().addAll(types);
         updateTypeList.setOnAction(this::returnType);
         localDB = new Database();
@@ -75,8 +80,8 @@ public class UpdateMedicinePanel implements Initializable {
         updateTypeList.setValue(medicine.getType());
         updateExpiryDateField.setValue(LocalDate.parse(medicine.getExpiry()));
         updateQuantityField.setText(String.valueOf(medicine.getQuantity()));
-
-
+        updateGenericNameField.setText(medicine.getGeneric_drug_name());
+        TextFields.bindAutoCompletion(updateGenericNameField,GenericDrugsList.genericDrugNames);
 
     }
 
@@ -89,7 +94,7 @@ public class UpdateMedicinePanel implements Initializable {
         String updateStatusLabel= null;
 
         Float buyingCost, sellingCost, quantityAdded;
-        String name, type, dose;
+        String name, type, dose, drugGenericName;
         LocalDate expiryDate;
         String date;
         String serial_id;
@@ -106,8 +111,9 @@ public class UpdateMedicinePanel implements Initializable {
             quantityAdded = Float.valueOf(updateQuantityField.getText());
             name = updateNameField.getText();
             type = updateTypeList.getValue();
-
-            new_medicine = new Medicine(name, dose, date, type, sellingCost, quantityAdded, buyingCost);
+            //will be implemented later
+            drugGenericName = updateGenericNameField.getText();
+            new_medicine = new Medicine(name,drugGenericName,dose, date, type, sellingCost, quantityAdded, buyingCost);
 
             if (localDB.updateMedicine(old_medicine, new_medicine, con)) {
                updateStatusLabel = "Medicine updated successfully!";
@@ -155,7 +161,9 @@ public class UpdateMedicinePanel implements Initializable {
         updateTypeList.setValue(medicine.getType());
         updateExpiryDateField.setValue(LocalDate.parse(medicine.getExpiry()));
         updateQuantityField.setText(String.valueOf(medicine.getQuantity()));
-
+        updateGenericNameField.setText(String.valueOf(medicine.getGeneric_drug_name()));
+        //must bind the text field again !!
+        TextFields.bindAutoCompletion(updateGenericNameField,GenericDrugsList.genericDrugNames);
 
 
     }

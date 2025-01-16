@@ -68,6 +68,9 @@ public class ShopMenu implements Initializable {
    private TableColumn<Medicine, String> Status;
 
    @FXML
+   private TableColumn<Medicine, String> GenericDrugName;
+
+   @FXML
    private VBox vpanel;
 
    @FXML
@@ -203,10 +206,12 @@ public class ShopMenu implements Initializable {
       Expiry.setCellValueFactory(new PropertyValueFactory<Medicine,String>("Expiry"));
       Status.setCellValueFactory(new PropertyValueFactory<Medicine,String>("Status"));
       dateAddedColumn.setCellValueFactory(new PropertyValueFactory<Medicine,LocalDate>("serial_id"));
+      //newly added
+      GenericDrugName.setCellValueFactory(new PropertyValueFactory<Medicine,String>("generic_drug_name"));
 
 
       try {
-         rs = GlobalDB.showInventory(GlobalConnect,store_location);
+         rs = GlobalDB.showInventory(GlobalConnect);
          //get low stock limit marker
          lowStockLimit = GlobalDB.fetchLowStockValue(GlobalConnect);
       } catch (SQLException e) {
@@ -391,7 +396,7 @@ public class ShopMenu implements Initializable {
 
    public void refreshList(){
       try {
-         this.rs = GlobalDB.showInventory(GlobalConnect,store_location);
+         this.rs = GlobalDB.showInventory(GlobalConnect);
       } catch (SQLException e) {
          throw new RuntimeException(e);
       }
@@ -408,7 +413,7 @@ public class ShopMenu implements Initializable {
          // Handle potential SQLException here
          e.printStackTrace();
       }
-      inventoryTable.setItems(list);
+      this.inventoryTable.setItems(list);
 
 
      detectStockEmpty();

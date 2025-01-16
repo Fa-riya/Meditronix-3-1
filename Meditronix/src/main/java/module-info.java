@@ -8,6 +8,7 @@ module com.example.meditronix {
     requires layout;
     requires io;
     requires java.desktop;
+    requires org.controlsfx.controls;
     //requires mysql.connector;
 
     opens com.example.meditronix to javafx.fxml;
