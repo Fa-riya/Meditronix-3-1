@@ -45,7 +45,7 @@ import java.util.List;
 
 public class PrescribedPurchase implements Initializable {
 
-    public static final String BASE_FILE_PATH = "F:\\Sem5\\RDBMS project\\Meditronix-3-1\\Meditronix\\memos\\";
+    public static final String BASE_FILE_PATH = "C:\\Users\\Rafid\\Documents\\GitHub\\Meditronix-3-1\\Meditronix\\memos";
 
     String code ="";
     @FXML

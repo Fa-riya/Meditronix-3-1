@@ -31,9 +31,9 @@ public class Database {
     public Connection dbConnect()  {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            String url = "jdbc:mysql://127.0.0.1:3306/meditronix";
+            String url = "jdbc:mysql://127.0.0.1:3306/mylocaldb";
             String username = "root";
-            String password = "12345";
+            String password = "admin1234";
 
             Connection con = DriverManager.getConnection(url, username, password);
             System.out.println("Connected to database successfully");
