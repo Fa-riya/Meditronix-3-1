@@ -150,6 +150,35 @@ public class PrescribedPurchase implements Initializable {
         });
     }
 
+    public void detectStockEmpty()
+    {
+        PresTable.setRowFactory(tv -> new TableRow<MedicineDataPrescription>() {
+            @Override
+            protected void updateItem(MedicineDataPrescription item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    //Set priority with higher priority given to expiry date,then to stock level
+                    // If quantity is 0, color the row red
+                    if(Database.isMedicineExpired(item.getMedicineName(), item.getDosage(),Location.getValue(),GlobalConnect)){
+                        setStyle("-fx-background-color: #c94059;-fx-font-weight: bold;");
+                    }
+                    else if (item.getQuantity() == 0) {
+
+
+                        setStyle("-fx-background-color: #8a61bd;-fx-font-weight: bold;");
+                    }
+                    else {
+
+                        setStyle(""); // Default style
+                    }
+                }
+            }
+        });
+    }
+
+
     @FXML
     private void loadPrescriptionData(String code, List<Prescription> prescriptions) {
         // Find the prescription and update the generation date
@@ -169,6 +198,7 @@ public class PrescribedPurchase implements Initializable {
             PresTable.getItems().clear(); // Clear the table if no data is found
         } else {
             PresTable.setItems(data);
+            detectStockEmpty();
         }
     }
 
@@ -314,7 +344,7 @@ public class PrescribedPurchase implements Initializable {
             String formattedDateTime = now.format(formatter);
 
             // Add title "Memo No: <memoNo>" and current date and time
-            Paragraph title = new Paragraph("Invoice No: " + memoNo + "\nTime: " + formattedDateTime)
+            Paragraph title = new Paragraph("Invoice No: " + memoNo + "\nTime: " + formattedDateTime+ "\nBranch: " + Location.getValue())
                     .setFont(regularFont)
                     .setFontSize(12)
                     .setTextAlignment(TextAlignment.LEFT)
@@ -449,6 +479,13 @@ public class PrescribedPurchase implements Initializable {
                     String selectedLocation = Location.getValue();
                     System.out.println("Selected Location: " + selectedLocation);
                     // You can store or use the selected location as needed
+
+                    // On location changes, set cart to clear to avoid purchase of med from multiple location under one memo
+                    // This is done to avoid storing location info in memo
+                    // ----Added by Rafid
+                    cartList.clear();
+                    CartTable.refresh();
+                    detectStockEmpty();
                 });
 
             } catch (SQLException e) {

@@ -38,6 +38,7 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -147,6 +148,46 @@ public class GenericPurchaseController implements Initializable {
         });
     }
 
+    //Function by Rafid
+    //For highlighting table index
+    boolean medExpired(String expiryDate)
+    {
+        LocalDate currentDate = LocalDate.parse(GlobalDB.currentDate());
+        LocalDate medExpiryDate = LocalDate.parse(expiryDate);
+
+        return currentDate.isAfter(medExpiryDate);
+    }
+
+    //Highlight rows which have expired or low on stock
+    public void detectStockEmpty()
+    {
+        GenericTable.setRowFactory(tv -> new TableRow<Medicine>() {
+            @Override
+            protected void updateItem(Medicine item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setStyle("");
+                } else {
+                    //Set priority with higher priority given to expiry date,then to stock level
+                    // If quantity is 0, color the row red
+                    if(medExpired(item.getExpiry())){
+                        item.setStatus("Expired!");
+                        setStyle("-fx-background-color: #c94059;-fx-font-weight: bold;");
+                    }
+                    else if (item.getQuantity() == 0) {
+                        item.setStatus("Out of Stock");
+
+                        setStyle("-fx-background-color: #8a61bd;-fx-font-weight: bold;");
+                    }
+                    else {
+                        item.setStatus("Valid");
+                        setStyle(""); // Default style
+                    }
+                }
+            }
+        });
+    }
+
     private void loadMedicinesByLocation() {
         String selectedLocation = Location.getValue(); // Get the currently selected location.
         list.clear(); // Clear the current list of medicines.
@@ -163,6 +204,7 @@ public class GenericPurchaseController implements Initializable {
         }
 
         GenericTable.setItems(list); // Update the table with the filtered list.
+        detectStockEmpty();
     }
 
 
@@ -404,6 +446,13 @@ public class GenericPurchaseController implements Initializable {
                     String selectedLocation = Location.getValue();
                     System.out.println("Selected Location: " + selectedLocation);
                     // You can store or use the selected location as needed
+
+                    // On location changes, set cart to clear to avoid purchase of med from multiple location under one memo
+                    // This is done to avoid storing location info in memo
+                    // ----Added by Rafid
+                    cartList.clear();
+                    CartTable.refresh();
+                    detectStockEmpty();
                 });
 
             } catch (SQLException e) {
@@ -450,7 +499,7 @@ public class GenericPurchaseController implements Initializable {
             String formattedDateTime = now.format(formatter);
 
             // Add title "Memo No: <memoNo>" and current date and time
-            Paragraph title = new Paragraph("Invoice No: " + memoNo + "\nTime: " + formattedDateTime)
+            Paragraph title = new Paragraph("Invoice No: " + memoNo + "\nTime: " + formattedDateTime + "\nBranch: " + Location.getValue())
                     .setFont(regularFont)
                     .setFontSize(12)
                     .setTextAlignment(TextAlignment.LEFT)
