@@ -45,7 +45,9 @@ import java.util.List;
 
 public class PrescribedPurchase implements Initializable {
 
-    String code ;
+    public static final String BASE_FILE_PATH = "F:\\Sem5\\RDBMS project\\Meditronix-3-1\\Meditronix\\memos\\";
+
+    String code ="";
     @FXML
     private TableView<Medicine> CartTable;
     @FXML
@@ -61,6 +63,9 @@ public class PrescribedPurchase implements Initializable {
 
     @FXML
     private ChoiceBox<String> PresCode;
+    @FXML
+    private ChoiceBox<String> Location;
+    private String selectedLocation = "";
     private String username;
     @FXML
     private Button addButton;
@@ -97,6 +102,7 @@ public class PrescribedPurchase implements Initializable {
     private Connection GlobalConnect;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        populateLocations();
         GlobalDB = new Database();
         GlobalConnect = GlobalDB.dbConnect();
         CartNameColumn.setCellValueFactory(new PropertyValueFactory<>("Name"));
@@ -104,7 +110,9 @@ public class PrescribedPurchase implements Initializable {
         CartQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("Quantity"));
         CartPriceColumn.setCellValueFactory(new PropertyValueFactory<>("Price"));
 
+        CartTable.setItems(cartList);
 
+        setupLocationListener();
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("medicineName"));
         dosageColumn.setCellValueFactory(new PropertyValueFactory<>("dosage"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
@@ -121,17 +129,25 @@ public class PrescribedPurchase implements Initializable {
             for (Prescription prescription : prescriptions) {
                 PresCode.getItems().add(prescription.getPrescriptionCode());
             }
-
             // Set up listener for the ChoiceBox
             PresCode.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue != null) {
                     loadPrescriptionData(newValue, prescriptions);
+                    code = newValue; // Update the 'code' with the selected value
+                    System.out.println("Selected code: " + code);
                 }
             });
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert("Database Error", "An error occurred while fetching prescriptions.");
         }
+    }
+    private void setupLocationListener() {
+        Location.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                selectedLocation = newValue;
+            }
+        });
     }
 
     @FXML
@@ -180,15 +196,21 @@ public class PrescribedPurchase implements Initializable {
                 return;
             }
             try (Connection con = GlobalDB.dbConnect()) {
-                if (GlobalDB.isMedicineExpired(selectedMedicine.getMedicineName(), selectedMedicine.getDosage(), con)) {
+                if (GlobalDB.isMedicineExpired(selectedMedicine.getMedicineName(), selectedMedicine.getDosage(),selectedLocation, con)) {
                     showError("The selected medicine is expired.");
                     return;
                 }
             }
             if (quantityToAdd <= selectedMedicine.getQuantity()) {
-                float availableQuantity = GlobalDB.getMedicineQuantity("shop_inventory", selectedMedicine.getMedicineName(),selectedMedicine.getDosage());
+                float availableQuantity = GlobalDB.getMedicineQuantity( selectedMedicine.getMedicineName(),selectedMedicine.getDosage(),selectedLocation);
                 if (quantityToAdd <= availableQuantity) {
-                    float price = GlobalDB.updateMedicineQuantity(code, selectedMedicine.getMedicineName(), selectedMedicine.getDosage(), quantityToAdd);
+                  // System.out.println("Medicine Name: " + selectedMedicine.getMedicineName());
+                    //System.out.println("Dosage: " + selectedMedicine.getDosage());
+                   // System.out.println("Quantity to Add: " + quantityToAdd);
+                 //   System.out.println("Location " + selectedLocation);
+                  //  System.out.println("Code " + code);
+
+                    float price = GlobalDB.updateMedicineQuantity(code, selectedMedicine.getMedicineName(), selectedMedicine.getDosage(), quantityToAdd,selectedLocation);
                     Medicine newMedicine = new Medicine(selectedMedicine.getMedicineName(), selectedMedicine.getDosage(), quantityToAdd, price);
 
                     // Add the new Medicine object to the cartTable
@@ -270,7 +292,7 @@ public class PrescribedPurchase implements Initializable {
         alert.showAndWait();
     }
     private void generatePdfForCart(int memoNo) throws FileNotFoundException {
-        String dest = "C:\\Users\\Rafid\\IdeaProjects\\Meditronix2.0-main-Merged\\Meditronix2.0-main\\Meditronix\\memos\\" + memoNo + ".pdf";
+        String dest = BASE_FILE_PATH + memoNo + ".pdf";
         PdfWriter writer = new PdfWriter(dest);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
@@ -339,8 +361,7 @@ public class PrescribedPurchase implements Initializable {
             document.close();
         }
 
-        String filePath = "C:\\Users\\Rafid\\IdeaProjects\\Meditronix2.0-main-Merged\\Meditronix2.0-main\\Meditronix\\memos\\" + memoNo + ".pdf";
-
+        String filePath = BASE_FILE_PATH + memoNo + ".pdf";
         try {
             File file = new File(filePath);
 
@@ -367,7 +388,7 @@ public class PrescribedPurchase implements Initializable {
         CartTable.refresh();
         // Calculate and set the subtotal
         calculateAndSetSubtotal();
-        if (!GlobalDB.removeMedFromCart(code, medInCart.getName(), medInCart.getDose(), medInCart.getQuantity())) {
+        if (!GlobalDB.removeMedFromCart(code, medInCart.getName(), medInCart.getDose(), medInCart.getQuantity(),selectedLocation)) {
             showAlert("Database Error", "Failed to remove the medicine from the cart in the database.");
             return;
         }
@@ -388,7 +409,7 @@ public class PrescribedPurchase implements Initializable {
         for (Medicine medInCart : cartList) {
             try {
                 // Remove the selected medicine from the database
-                if (!GlobalDB.removeMedFromCart(code, medInCart.getName(), medInCart.getDose(), medInCart.getQuantity())) {
+                if (!GlobalDB.removeMedFromCart(code, medInCart.getName(), medInCart.getDose(), medInCart.getQuantity(),selectedLocation)) {
                     showAlert("Database Error", "Failed to remove the medicine from the cart in the database.");
                     return;
                 }
@@ -403,5 +424,45 @@ public class PrescribedPurchase implements Initializable {
         Scene scene = new Scene((Parent) root);
         stage.setScene(scene);
         stage.show();
+    }
+    private void populateLocations() {
+        Database database = new Database(); // Assuming you have a Database class to handle connections
+        Connection con = database.dbConnect();
+
+        if (con != null) {
+            try {
+                String query = "SELECT DISTINCT store_location FROM shop_inventory WHERE store_location IS NOT NULL";
+                PreparedStatement stmt = con.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery();
+
+                // Add unique locations to the ChoiceBox
+                while (rs.next()) {
+                    String location = rs.getString("store_location");
+                    Location.getItems().add(location);
+                }
+
+                // Set default placeholder text
+                Location.setValue("Select Location");
+
+                // Set an action listener to handle selection changes
+                Location.setOnAction(event -> {
+                    String selectedLocation = Location.getValue();
+                    System.out.println("Selected Location: " + selectedLocation);
+                    // You can store or use the selected location as needed
+                });
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert("Location Error","Error fetching locations: " + e.getMessage());
+            } finally {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            System.out.println("Failed to connect to the database!");
+        }
     }
 }

@@ -32,12 +32,12 @@
             <TableColumn fx:id="CartPriceColumn" prefWidth="66.5" text="Price" />
          </columns>
       </TableView>
-      <Label layoutX="41.0" layoutY="88.0" prefHeight="39.0" prefWidth="64.0" text="Date :" textFill="#000000d3">
+      <Label layoutX="41.0" layoutY="76.0" prefHeight="39.0" prefWidth="64.0" text="Date :" textFill="#000000d3">
          <font>
             <Font name="Berlin Sans FB" size="19.0" />
          </font>
       </Label>
-      <Label fx:id="GenerationDate" layoutX="108.0" layoutY="87.0" prefHeight="39.0" prefWidth="385.0" styleClass="custom-label2" stylesheets="@AllStyling.css">
+      <Label fx:id="GenerationDate" layoutX="96.0" layoutY="76.0" prefHeight="29.0" prefWidth="160.0" styleClass="custom-label2" stylesheets="@AllStyling.css">
          <font>
             <Font size="16.0" />
          </font>
@@ -77,5 +77,6 @@
             <String fx:value="custom-drop-shadow" />
          </styleClass></Button>
       <ChoiceBox fx:id="PresCode" layoutX="193.0" layoutY="28.0" opacity="0.49" prefHeight="25.0" prefWidth="313.0" style="-fx-background-radius: 10;" />
+      <ChoiceBox fx:id="Location" layoutX="290.0" layoutY="76.0" opacity="0.73" prefHeight="35.0" prefWidth="207.0" style="-fx-background-radius: 10;" />
    </children>
 </Pane>

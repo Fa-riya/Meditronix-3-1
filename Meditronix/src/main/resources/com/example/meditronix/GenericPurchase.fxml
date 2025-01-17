@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -43,9 +44,9 @@
          <font>
             <Font name="Berlin Sans FB" size="20.0" />
          </font></Button>
-      <Label alignment="CENTER" layoutX="130.0" layoutY="31.0" prefHeight="32.0" prefWidth="287.0" styleClass="custom-label2" stylesheets="@AllStyling.css" text="GENERIC MEDICINES" textFill="#000000df">
+      <Label alignment="CENTER" layoutX="130.0" layoutY="31.0" prefHeight="36.0" prefWidth="194.0" styleClass="custom-label2" stylesheets="@AllStyling.css" text="GENERIC MEDICINES" textFill="#000000df">
          <font>
-            <Font name="Berlin Sans FB" size="23.0" />
+            <Font name="Berlin Sans FB" size="18.0" />
          </font>
       </Label>
       <ComboBox fx:id="QuantityBox" layoutX="38.0" layoutY="662.0" prefHeight="25.0" prefWidth="243.0" promptText="Quantity" style="-fx-background-radius: 20; -fx-background-color: white;" stylesheets="@ShopInventory.css" />
@@ -63,5 +64,6 @@
             <Font name="Berlin Sans FB" size="14.0" />
          </font>
       </Label>
+      <ChoiceBox fx:id="Location" layoutX="341.0" layoutY="32.0" opacity="0.74" prefHeight="35.0" prefWidth="163.0" style="-fx-background-radius: 10;" />
    </children>
 </Pane>

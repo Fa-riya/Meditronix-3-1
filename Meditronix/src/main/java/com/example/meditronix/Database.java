@@ -523,15 +523,16 @@ public class Database {
 
 
     //Codes for the Medicine Purchase Menu
-    public ResultSet showGeneric() throws SQLException {
-
+    public ResultSet showGeneric(String location) throws SQLException {
         Connection con = dbConnect();
         Statement stmt = con.createStatement();
-        String sql = "SELECT * FROM shop_inventory WHERE Type = 'Generic'; ";
-        ResultSet rs = stmt.executeQuery(sql);
-        return rs;
+        String sql = "SELECT * FROM shop_inventory WHERE Type = 'Generic' AND store_location = ?;";
 
+        PreparedStatement pstmt = con.prepareStatement(sql);
+        pstmt.setString(1, location); // Set the location parameter in the query
+        return pstmt.executeQuery();
     }
+
 
     public boolean addMemo() throws SQLException {
         Connection con = null;
@@ -577,24 +578,28 @@ public class Database {
         return lastValue;
     }
 
-    public float getMedicineQuantity(String tableName, String medicineName, String dosage) throws SQLException {
-        String sql = "SELECT Available_Quantity FROM " + tableName + " WHERE Name = ? AND Dose = ?";
+    public float getMedicineQuantity(String medicineName, String dosage, String location) throws SQLException {
+        String sql = "SELECT Available_Quantity FROM shop_inventory WHERE Name = ? AND Dose = ? AND store_location = ?";
+
         try (Connection con = dbConnect(); PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, medicineName);
             pstmt.setString(2, dosage);
+            pstmt.setString(3, location);  // Set the location in the query
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     return rs.getFloat("Available_Quantity");
                 } else {
-                    throw new SQLException("No record found for the specified medicine and dosage.");
+                    throw new SQLException("No record found for the specified medicine, dosage, and location.");
                 }
             }
         }
     }
 
-    public boolean removeMedFromCart(String tableName, String medicineName, String dosage, float addedQuantity) throws SQLException {
-        String updateTableSql = "UPDATE " + tableName + " SET quantity = quantity + ? WHERE medicine_name = ? AND dosage = ?";
-        String updateInventorySql = "UPDATE shop_inventory SET Available_Quantity = Available_Quantity + ? WHERE Name = ? AND Dose = ?";
+
+    public boolean removeMedFromCart(String tableName, String medicineName, String dosage, float addedQuantity, String location) throws SQLException {
+        String updateTableSql = "UPDATE " + tableName + " SET quantity = quantity + ? WHERE medicine_name = ? AND dosage = ? ";
+        String updateInventorySql = "UPDATE shop_inventory SET Available_Quantity = Available_Quantity + ? WHERE Name = ? AND Dose = ? AND store_location = ?";
 
         try (Connection con = dbConnect();
              PreparedStatement pstmt1 = con.prepareStatement(updateTableSql);
@@ -604,12 +609,14 @@ public class Database {
             pstmt1.setFloat(1, addedQuantity);
             pstmt1.setString(2, medicineName);
             pstmt1.setString(3, dosage);
+
             int rowsUpdated1 = pstmt1.executeUpdate();
 
             // Update quantity in the shop_inventory table
             pstmt2.setFloat(1, addedQuantity);
             pstmt2.setString(2, medicineName);
             pstmt2.setString(3, dosage);
+            pstmt2.setString(4, location);  // Include location in the query
             int rowsUpdated2 = pstmt2.executeUpdate();
 
             // Check if both updates were successful
@@ -617,7 +624,8 @@ public class Database {
         }
     }
 
-    public float updateMedicineQuantity(String tableName, String medicineName, String dosage, float addedQuantity) throws SQLException {
+
+    public float updateMedicineQuantity(String tableName, String medicineName, String dosage, float addedQuantity, String location) throws SQLException {
         Connection con = null;
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -627,26 +635,30 @@ public class Database {
             con = dbConnect();
             con.setAutoCommit(false); // Start transaction
 
-            // Update quantity in the specified table
+            // Update quantity in the specified table, considering location
             String updateTableSql = "UPDATE " + tableName + " SET quantity = quantity - ? WHERE medicine_name = ? AND dosage = ?";
             pstmt = con.prepareStatement(updateTableSql);
             pstmt.setFloat(1, addedQuantity);
             pstmt.setString(2, medicineName);
             pstmt.setString(3, dosage);
+
             pstmt.executeUpdate();
 
-            // Update quantity in the shop_inventory table and get the price
-            String updateInventorySql = "UPDATE shop_inventory SET Available_Quantity = Available_Quantity - ? WHERE Name = ? AND Dose = ?";
+            // Update quantity in the shop_inventory table, considering location, and get the price
+            String updateInventorySql = "UPDATE shop_inventory SET Available_Quantity = Available_Quantity - ? WHERE Name = ? AND Dose = ? AND store_location = ?";
             pstmt = con.prepareStatement(updateInventorySql);
             pstmt.setFloat(1, addedQuantity);
             pstmt.setString(2, medicineName);
             pstmt.setString(3, dosage);
+            pstmt.setString(4, location);  // Include location in the query
             pstmt.executeUpdate();
 
-            String getPriceSql = "SELECT Selling_price FROM shop_inventory WHERE Name = ? AND Dose = ?";
+            // Get price from the shop_inventory table, considering location
+            String getPriceSql = "SELECT Selling_price FROM shop_inventory WHERE Name = ? AND Dose = ? AND store_location = ?";
             pstmt = con.prepareStatement(getPriceSql);
             pstmt.setString(1, medicineName);
             pstmt.setString(2, dosage);
+            pstmt.setString(3, location);  // Include location in the query
             rs = pstmt.executeQuery();
             if (rs.next()) {
                 price = rs.getFloat("Selling_price");
@@ -668,6 +680,7 @@ public class Database {
 
         return price;
     }
+
     //SQL function to update a selected med in inventory
     //Must match user location here as well -> IMPLEMENTED
     public boolean updateMedicine(Medicine old_med,Medicine new_med,Connection con) throws SQLException {
@@ -711,6 +724,37 @@ public class Database {
         return false;
 
     }
+    public boolean updateMedicine(Medicine old_med, Medicine new_med, String store_location, Connection con) throws SQLException {
+        String updateSQL = "UPDATE `shop_inventory`\n" +
+                "SET\n" +
+                "  `Name` = ?,\n" +
+                "  `Selling_price` = ?,\n" +
+                "  `Available_Quantity` = ?,\n" +
+                "  `unit_cost` = ?,\n" +
+                "  `Dose` = ?,\n" +
+                "  `Expiry` = ?,\n" +
+                "  `Type` = ?,\n" +
+                "  `generic_drug_name` = ?\n" +
+                "WHERE `serial_id` = ? " +
+                "AND `store_location` = ?;";
+        PreparedStatement update_stmt = con.prepareStatement(updateSQL);
+
+        update_stmt.setString(1, new_med.getName());
+        update_stmt.setFloat(2, new_med.getPrice());
+        update_stmt.setFloat(3, new_med.getQuantity());
+        update_stmt.setFloat(4, new_med.getUnitCost());
+        update_stmt.setString(5, new_med.getDose());
+        update_stmt.setString(6, new_med.getExpiry());
+        update_stmt.setString(7, new_med.getType());
+        update_stmt.setString(8, new_med.getGeneric_drug_name());
+        update_stmt.setString(9, old_med.getSerial_id());
+        update_stmt.setString(10, store_location);
+
+        int rowsAffected = update_stmt.executeUpdate();
+
+        return rowsAffected > 0;
+    }
+
 
     //SQL function to change password and username Date 2nd June
     public boolean changeCredentials(Connection con, String currentUsername,String currentPassword,
@@ -766,11 +810,14 @@ public class Database {
 
     }
 
-    public static boolean isMedicineExpired(String medicineName, String dose,Connection con) {
-        String sql = "SELECT Expiry FROM shop_inventory WHERE Name = ? AND Dose = ?";
+    public static boolean isMedicineExpired(String medicineName, String dose, String location, Connection con) {
+        String sql = "SELECT Expiry FROM shop_inventory WHERE Name = ? AND Dose = ? AND store_location = ?";
+
         try (PreparedStatement pstmt = con.prepareStatement(sql)) {
             pstmt.setString(1, medicineName);
             pstmt.setString(2, dose);
+            pstmt.setString(3, location); // Set the location parameter
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
                     String expiryDateStr = rs.getString("Expiry");
@@ -791,7 +838,7 @@ public class Database {
                         return false;
                     }
                 } else {
-                    // No record found for the specified medicine name and dose
+                    // No record found for the specified medicine name, dose, and location
                     return false;
                 }
             }
@@ -978,6 +1025,13 @@ public class Database {
         return suggestions;
     }
 
+    public ResultSet showMedicinesByLocation(String location) throws SQLException {
+        String query = "SELECT * FROM shop_inventory WHERE store_location = ?";
+        Connection con = dbConnect();
+        PreparedStatement stmt = con.prepareStatement(query);
+        stmt.setString(1, location);
+        return stmt.executeQuery();
+    }
 
 
 

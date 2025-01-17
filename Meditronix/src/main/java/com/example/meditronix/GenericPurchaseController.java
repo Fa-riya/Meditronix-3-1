@@ -15,9 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
@@ -49,6 +47,7 @@ import java.util.ResourceBundle;
 
 public class GenericPurchaseController implements Initializable {
 
+    public static final String BASE_FILE_PATH = "F:\\Sem5\\RDBMS project\\Meditronix-3-1\\Meditronix\\memos\\";
     //Inventory Column
     @FXML
     private TableView<Medicine> GenericTable;
@@ -99,46 +98,73 @@ public class GenericPurchaseController implements Initializable {
     @FXML
     private Button Checkout;
 
+    @FXML
+    private ChoiceBox<String> Location;
+    private String selectedLocation = "";
+
     @Override
-    public void initialize(URL url, ResourceBundle resourceBundle){
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        populateLocations();
         GlobalDB = new Database();
         GlobalConnect = GlobalDB.dbConnect();
-        NameColumn.setCellValueFactory(new PropertyValueFactory<Medicine,String>("Name"));
-        DosageColumn.setCellValueFactory(new PropertyValueFactory<Medicine,String>("Dose"));
-        QuantityColumn.setCellValueFactory(new PropertyValueFactory<Medicine,Float>("Quantity"));
-        PriceColumn.setCellValueFactory(new PropertyValueFactory<Medicine,Float>("Price"));
-
-
-        CartNameColumn.setCellValueFactory(new PropertyValueFactory<>("Name"));
-        CartDosageColumn.setCellValueFactory(new PropertyValueFactory<>("Dose"));
-        CartQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("Quantity"));
-        CartPriceColumn.setCellValueFactory(new PropertyValueFactory<>("Price"));
-        try {
-            rs = new Database().showGeneric();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        initializeTableColumns();
+        initializeCartColumns();
+        if (!Location.getItems().isEmpty()) {
+            Location.getSelectionModel().selectFirst();
         }
 
-        try {
-            while (rs.next()) {
-                // Create a new Medicine object from each row in the ResultSet
-                Medicine medicine = new Medicine(rs);
-                // Add the medicine object to the ObservableList
-                list.add(medicine);
-            }
-        } catch (SQLException e) {
-            // Handle potential SQLException here
-            e.printStackTrace();
-        }
-        GenericTable.setItems(list);
+        setupLocationListener();
 
-        CartTable.setItems(cartList);
+        loadMedicinesByLocation();
+
         for (int i = 1; i <= 15; i++) {
             QuantityBox.getItems().add(i);
         }
         QuantityBox.setValue(0);
-        //  QuantityBox.getSelectionModel().selectFirst();
     }
+
+    private void initializeTableColumns() {
+        NameColumn.setCellValueFactory(new PropertyValueFactory<>("Name"));
+        DosageColumn.setCellValueFactory(new PropertyValueFactory<>("Dose"));
+        QuantityColumn.setCellValueFactory(new PropertyValueFactory<>("Quantity"));
+        PriceColumn.setCellValueFactory(new PropertyValueFactory<>("Price"));
+    }
+
+    private void initializeCartColumns() {
+        CartNameColumn.setCellValueFactory(new PropertyValueFactory<>("Name"));
+        CartDosageColumn.setCellValueFactory(new PropertyValueFactory<>("Dose"));
+        CartQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("Quantity"));
+        CartPriceColumn.setCellValueFactory(new PropertyValueFactory<>("Price"));
+        CartTable.setItems(cartList);
+    }
+
+    private void setupLocationListener() {
+        Location.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                selectedLocation = newValue;
+                loadMedicinesByLocation();
+            }
+        });
+    }
+
+    private void loadMedicinesByLocation() {
+        String selectedLocation = Location.getValue(); // Get the currently selected location.
+        list.clear(); // Clear the current list of medicines.
+
+        try {
+            ResultSet rs = GlobalDB.showGeneric(selectedLocation);
+            while (rs.next()) {
+                Medicine medicine = new Medicine(rs);
+                list.add(medicine);
+            }
+        } catch (SQLException e) {
+            showAlert("Database Error", "Failed to load medicines for the selected location: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        GenericTable.setItems(list); // Update the table with the filtered list.
+    }
+
 
     @FXML
     void BackButtonPressed(ActionEvent event) throws IOException {
@@ -146,7 +172,7 @@ public class GenericPurchaseController implements Initializable {
         for (Medicine medInCart : cartList) {
             try {
                 // Retrieve the ResultSet containing all medicines from the database
-                ResultSet rs = new Database().showGeneric();
+                ResultSet rs = new Database().showGeneric(selectedLocation);
 
 
                 boolean found = false;
@@ -164,7 +190,7 @@ public class GenericPurchaseController implements Initializable {
                         medicine.setQuantity(medInCart.getQuantity() + medicine.getQuantity());
 
                         // Attempt to update the database entry
-                        if (GlobalDB.updateMedicine(medicine, medicine, GlobalConnect)) {
+                        if (GlobalDB.updateMedicine(medicine, medicine,selectedLocation, GlobalConnect)) {
                             found = true;
                         } else {
                             showAlert("Database Update Error", "Failed to update the database.");
@@ -215,7 +241,7 @@ public class GenericPurchaseController implements Initializable {
             showAlert("No Selection", "No medicine selected. Please select a medicine.");
         } else {
             try (Connection con = GlobalDB.dbConnect()) {
-                if (GlobalDB.isMedicineExpired(selectedMedicine.getName(), selectedMedicine.getDose(), con)) {
+                if (GlobalDB.isMedicineExpired(selectedMedicine.getName(), selectedMedicine.getDose(),selectedLocation, con)) {
                     showAlert("Expired Stock","The selected medicine is expired.");
                     return;
                 }
@@ -228,7 +254,7 @@ public class GenericPurchaseController implements Initializable {
                 try {
                     Medicine updatedMedicine = selectedMedicine;
                     updatedMedicine.setQuantity(newQuantity);
-                    if (GlobalDB.updateMedicine(selectedMedicine,updatedMedicine, GlobalConnect)) {
+                    if (GlobalDB.updateMedicine(selectedMedicine,updatedMedicine,selectedLocation, GlobalConnect)) {
                         // Update the in-memory table
                         GenericTable.refresh();
 
@@ -269,7 +295,7 @@ public class GenericPurchaseController implements Initializable {
             // Retrieve the ResultSet containing all medicines from the database
             ResultSet rs;
             try {
-                rs = new Database().showGeneric();
+                rs = new Database().showGeneric(selectedLocation);
             } catch (SQLException e) {
                 throw new RuntimeException("Failed to retrieve data from the database", e);
             }
@@ -283,7 +309,7 @@ public class GenericPurchaseController implements Initializable {
                     // Update the corresponding entry in the database
 
                     medicine.setQuantity(medInCart.getQuantity()+ medicine.getQuantity());
-                    if (GlobalDB.updateMedicine(medicine, medicine, GlobalConnect)) {
+                    if (GlobalDB.updateMedicine(medicine, medicine,selectedLocation, GlobalConnect)) {
 
                     } else {
                         showAlert("Database Update Error", "Failed to update the database.");
@@ -341,15 +367,59 @@ public class GenericPurchaseController implements Initializable {
             showAlert("Error", "An error occurred during checkout. Please try again.");
         }
 
-        //Back to previous menu
-        Object root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("PurchaseTypeSelection.fxml")));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        UserSession session = UserSession.getInstance();
+        String nextScene = session.getSignedIn() == 1
+                ? "PurchaseTypeSelection.fxml" // Signed in
+                : "MainScreen.fxml";          // Not signed in
+
+        // Load the appropriate scene
+        Object root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(nextScene)));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene((Parent) root);
         stage.setScene(scene);
         stage.show();
     }
 
+    private void populateLocations() {
+        Database database = new Database(); // Assuming you have a Database class to handle connections
+        Connection con = database.dbConnect();
 
+        if (con != null) {
+            try {
+                String query = "SELECT DISTINCT store_location FROM shop_inventory WHERE store_location IS NOT NULL";
+                PreparedStatement stmt = con.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery();
+
+                // Add unique locations to the ChoiceBox
+                while (rs.next()) {
+                    String location = rs.getString("store_location");
+                    Location.getItems().add(location);
+                }
+
+                // Set default placeholder text
+                Location.setValue("Select Location");
+
+                // Set an action listener to handle selection changes
+                Location.setOnAction(event -> {
+                    String selectedLocation = Location.getValue();
+                    System.out.println("Selected Location: " + selectedLocation);
+                    // You can store or use the selected location as needed
+                });
+
+            } catch (SQLException e) {
+                e.printStackTrace();
+                showAlert("Location Error","Error fetching locations: " + e.getMessage());
+            } finally {
+                try {
+                    con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            System.out.println("Failed to connect to the database!");
+        }
+    }
 
     public void showCheckoutSuccessAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION, content, ButtonType.OK);
@@ -358,7 +428,7 @@ public class GenericPurchaseController implements Initializable {
         alert.showAndWait();
     }
     private void generatePdfForCart(int memoNo) throws FileNotFoundException {
-        String dest = "C:\\Users\\Rafid\\IdeaProjects\\Meditronix2.0-main-Merged\\Meditronix2.0-main\\Meditronix\\memos\\" + memoNo + ".pdf";
+        String dest = BASE_FILE_PATH + memoNo + ".pdf";
         PdfWriter writer = new PdfWriter(dest);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
@@ -427,8 +497,7 @@ public class GenericPurchaseController implements Initializable {
             document.close();
         }
 
-        String filePath = "C:\\Users\\Rafid\\IdeaProjects\\Meditronix2.0-main-Merged\\Meditronix2.0-main\\Meditronix\\memos\\" +memoNo+ ".pdf";
-
+        String filePath = BASE_FILE_PATH + memoNo + ".pdf";
         try {
             File file = new File(filePath);
 
