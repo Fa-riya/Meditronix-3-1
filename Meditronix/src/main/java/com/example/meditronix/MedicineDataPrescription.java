@@ -1,5 +1,7 @@
 package com.example.meditronix;
 
+import java.sql.Connection;
+
 public class MedicineDataPrescription {
     private String medicineName;
     private String dosage;
@@ -44,4 +46,7 @@ public class MedicineDataPrescription {
     public void setFrequency(String frequency) {
         this.frequency = frequency;
     }
+
+    //return expiry date of medicine at the selected location
+
 }
