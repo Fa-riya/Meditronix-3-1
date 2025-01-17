@@ -229,7 +229,7 @@ public class MainScreen implements Initializable{
         }
     }
 
-    private String hashPassword(String password) throws NoSuchAlgorithmException {
+    public static String hashPassword(String password) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
         StringBuilder hexString = new StringBuilder();

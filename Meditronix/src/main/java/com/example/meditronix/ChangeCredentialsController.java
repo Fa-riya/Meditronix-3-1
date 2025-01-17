@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -32,16 +33,18 @@ public class ChangeCredentialsController {
     private TextField currentPassword;
 
     @FXML
-    public  void onConfirmClicked(ActionEvent event) throws SQLException {
+    public  void onConfirmClicked(ActionEvent event) throws SQLException, NoSuchAlgorithmException {
 
         if(newPassField.getText() != null && newUsernameField.getText() != null &&
                 currentUserNameField.getText() != null && currentPassword.getText() != null)
         {
 
             String newPass = newPassField.getText();
+                   newPass = MainScreen.hashPassword(newPass);
             String newName = newUsernameField.getText();
             String currentName = currentUserNameField.getText();
             String currentPasscode = currentPassword.getText();
+                   currentPasscode = MainScreen.hashPassword(currentPasscode);
 
             Connection con = ShopMenu.getInstance().getConnection();
             System.out.println(currentName + currentPasscode);
