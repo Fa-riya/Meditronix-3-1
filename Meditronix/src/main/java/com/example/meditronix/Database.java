@@ -910,6 +910,26 @@ public class Database {
         return Period.between(birthDate, currentDate).getYears();
     }
 
+    public ResultSet executeQuery(String query, String username) {
+        try {
+            // Establish database connection
+            Connection con = dbConnect();
+
+            // Prepare the SQL statement with the provided query
+            PreparedStatement pstmt = con.prepareStatement(query);
+
+            // Set the parameter for the query
+            pstmt.setString(1, username);
+
+            // Execute the query and return the result set
+            return pstmt.executeQuery();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Error executing query: " + e.getMessage());
+            return null; // Return null in case of an error
+        }
+    }
+
     // Simplified PatientInfo class
     public class PatientInfo {
         private String name;

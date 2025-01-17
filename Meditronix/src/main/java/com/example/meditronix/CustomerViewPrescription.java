@@ -1,8 +1,10 @@
 package com.example.meditronix;
 
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,12 +21,21 @@ import com.itextpdf.kernel.pdf.PdfDocument;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.ResourceBundle;
 
-public class CustomerViewPrescription {
+public class CustomerViewPrescription implements Initializable {
+
     @FXML
-    private Label ageLabel;
+    private Label GenerationDate;
 
     @FXML
     private Button backButton;
@@ -32,12 +43,14 @@ public class CustomerViewPrescription {
     @FXML
     private Button downloadPDF;
 
-    @FXML
-    private Label genderLabel;
+    String name;
+    int age;
+    String gender;
 
     @FXML
     private Button loadPrescriptionButton;
-
+    @FXML
+    private TableView<MedicineDataPrescription> medTable;
     @FXML
     private TableColumn<MedicineDataPrescription, String> medDosageColumn;
 
@@ -50,16 +63,76 @@ public class CustomerViewPrescription {
     @FXML
     private TableColumn<MedicineDataPrescription, Integer> medQuantityColumn;
 
-    @FXML
-    private TableView<MedicineDataPrescription> medTable;
+
 
     @FXML
-    private Label nameLabel;
+    private ChoiceBox<String> prescriptionCode;
 
-    @FXML
-    private TextField prescriptionCode;
-
+    String code;
+    private Database  GlobalDB = new Database();;
+    private Connection GlobalConnect =GlobalDB.dbConnect();
+    String username;
     private Database database = new Database();
+
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        medNameColumn.setCellValueFactory(new PropertyValueFactory<>("medicineName"));
+        medDosageColumn.setCellValueFactory(new PropertyValueFactory<>("dosage"));
+        medQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
+        medFrequencyColumn.setCellValueFactory(new PropertyValueFactory<>("frequency"));
+
+        username=UserSession.getInstance().getUsername();
+        try {
+            // Get patient ID from username
+            String patientId = GlobalDB.getPatientId(username);
+
+            // Fetch prescriptions for the patient
+            List<Prescription> prescriptions = GlobalDB.getPrescriptionsByPatientId(patientId);
+
+            // Populate the ChoiceBox with prescription codes
+            for (Prescription prescription : prescriptions) {
+                prescriptionCode.getItems().add(prescription.getPrescriptionCode());
+            }
+            // Set up listener for the ChoiceBox
+            prescriptionCode.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    loadPrescriptionData(newValue, prescriptions);
+                    code = newValue; // Update the 'code' with the selected value
+                    System.out.println("Selected code: " + code);
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "An error occurred while fetching prescriptions.");
+        }
+        LocalDate dateOfBirth = null;
+
+        try {
+            // Query to fetch name, gender, and date_of_birth
+            String query = "SELECT name, gender, date_of_birth FROM patient_info WHERE username = ?";
+            ResultSet resultSet = GlobalDB.executeQuery(query, username);
+
+            // Process the result
+            if (resultSet.next()) {
+                name = resultSet.getString("name");
+                gender = resultSet.getString("gender");
+                dateOfBirth = resultSet.getDate("date_of_birth").toLocalDate();
+
+                // Calculate age
+                int age = Period.between(dateOfBirth, LocalDate.now()).getYears();
+
+                // Display the details
+                System.out.println("Name: " + name);
+                System.out.println("Gender: " + gender);
+                System.out.println("Age: " + age);
+            } else {
+                System.out.println("No patient found with the username: " + username);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.err.println("Error fetching patient details: " + e.getMessage());
+        }
+    }
 
     @FXML
     void backButtonPressed(ActionEvent event) {
@@ -86,35 +159,29 @@ public class CustomerViewPrescription {
         }
     }
 
-    @FXML
-    void loadPrescriptionButtonPressed(ActionEvent event) {
-        String code = prescriptionCode.getText();
-        if (!code.isEmpty()) {
-            loadPrescriptionData(code);
+
+    private void loadPrescriptionData(String code, List<Prescription> prescriptions) {
+        // Find the prescription based on the selected code
+        Prescription selectedPrescription = prescriptions.stream()
+                .filter(prescription -> prescription.getPrescriptionCode().equals(code))
+                .findFirst()
+                .orElse(null);
+
+        if (selectedPrescription != null) {
+            GenerationDate.setText(selectedPrescription.getGeneratedDate().toString());
+        }
+
+        // Fetch medicine data using the selected code
+        ObservableList<MedicineDataPrescription> data = GlobalDB.getMedicineData(code);
+        if (data == null || data.isEmpty()) {
+            showAlert("No Data", "No medicine data found for the selected prescription code.");
+            medTable.getItems().clear(); // Clear the table if no data is found
+        } else {
+            // Set the medicine data to the table
+            medTable.setItems(data);
         }
     }
 
-    @FXML
-    void prescriptionCodeTfPressed(ActionEvent event) {
-        // No action needed here
-    }
-
-    private void loadPrescriptionData(String prescriptionCode) {
-        // Load patient data
-        PatientDataPrescription patientData = database.getPatientData(prescriptionCode);
-        if (patientData != null) {
-            nameLabel.setText(patientData.getName());
-            ageLabel.setText(patientData.getAge());
-            genderLabel.setText(patientData.getGender());
-        }
-
-        // Load medicine data
-        medNameColumn.setCellValueFactory(new PropertyValueFactory<>("medicineName"));
-        medDosageColumn.setCellValueFactory(new PropertyValueFactory<>("dosage"));
-        medQuantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
-        medFrequencyColumn.setCellValueFactory(new PropertyValueFactory<>("frequency"));
-        medTable.setItems(database.getMedicineData(prescriptionCode));
-    }
 
     private void createPDF(File file) {
         try {
@@ -127,13 +194,13 @@ public class CustomerViewPrescription {
             document.add(new Paragraph("------------------------------------------------------------------------------------------------------------------------------")
                     .setBold().setFontSize(12));
             // Add patient details with specific styling
-            document.add(new Paragraph("Patient Name: " + nameLabel.getText())
+            document.add(new Paragraph("Patient Name: " + name)
                     .setBold().setFontSize(12));
-            document.add(new Paragraph("Patient Age: " + ageLabel.getText())
+            document.add(new Paragraph("Patient Age: " + age)
                     .setBold().setFontSize(12));
-            document.add(new Paragraph("Patient Gender: " + genderLabel.getText())
+            document.add(new Paragraph("Patient Gender: " + gender)
                     .setBold().setFontSize(12));
-            document.add(new Paragraph("Prescription Code: " + prescriptionCode.getText())
+            document.add(new Paragraph("Prescription Code: " + code)
                     .setBold().setFontSize(12));
             document.add(new Paragraph(" ").setMarginBottom(20)); // Add a blank line
 
@@ -177,4 +244,13 @@ public class CustomerViewPrescription {
             e.printStackTrace();
         }
     }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
 }
