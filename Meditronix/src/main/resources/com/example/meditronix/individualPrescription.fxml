@@ -48,7 +48,7 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <Label layoutX="14.0" layoutY="16.0" prefHeight="24.0" prefWidth="172.0" text="Name: ">
+            <Label layoutX="14.0" layoutY="16.0" prefHeight="24.0" prefWidth="55.0" text="Name: ">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>

@@ -19,6 +19,7 @@ public class HelloApplication extends Application {
        // FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("PurchaseTypeSelection.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 760, 510);
 
+
         //For dev, use this entry point
      //   Scene scene = new Scene(fxmlLoader.load(), 957,722);
         String css = "src/main/resources/com/example/meditronix/ShopInventory.css";
