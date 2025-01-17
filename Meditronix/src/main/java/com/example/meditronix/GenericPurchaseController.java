@@ -185,11 +185,15 @@ public class GenericPurchaseController implements Initializable {
                 e.printStackTrace(); // Print the stack trace for debugging
             }
         }
+       // Check the signedIn status to determine the next scene
+        UserSession session = UserSession.getInstance();
+        String nextScene = session.getSignedIn() == 1
+                ? "PurchaseTypeSelection.fxml" // Signed in
+                : "MainScreen.fxml";          // Not signed in
 
-
-
-        Object root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("PurchaseTypeSelection.fxml")));
-        Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        // Load the appropriate scene
+        Object root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(nextScene)));
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         Scene scene = new Scene((Parent) root);
         stage.setScene(scene);
         stage.show();

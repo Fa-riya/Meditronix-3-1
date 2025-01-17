@@ -42,6 +42,7 @@ public class PurchaseTypeSelectorController {
     }
     @FXML
     private void BackButtonPress(ActionEvent event) throws IOException {
+        UserSession.getInstance().clearSession();
         Object root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource("MainScreen.fxml")));
 
         Stage stage = (Stage)((Node)event.getSource()).getScene().getWindow();

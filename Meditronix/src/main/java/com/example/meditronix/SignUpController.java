@@ -17,6 +17,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.EventObject;
 import java.util.Objects;
 import java.util.ResourceBundle;
@@ -41,6 +42,8 @@ public class SignUpController implements Initializable {
     private MenuButton GenderMenu;
     @FXML
     private PasswordField SignUpPassword;
+    @FXML
+    private DatePicker DateOfBirthPicker;
 
     public void initialize(URL url, ResourceBundle resourceBundle) {
         SignUpName.setStyle("-fx-text-fill: #0e0707;");
@@ -67,17 +70,18 @@ public class SignUpController implements Initializable {
         String emailid = Email.getText();
         String number = Number.getText();
         String gender = GenderMenu.getText();
+        LocalDate dateOfBirth = DateOfBirthPicker.getValue(); // Get the selected date
         Database database = new Database();
         Connection con = database.dbConnect();
 
-        // Check if username and password are not empty
-        if (username.isEmpty() || password.isEmpty() || number.isEmpty() || fullname.isEmpty() || emailid.isEmpty()) {
+        // Check if any required fields are empty
+        if (username.isEmpty() || password.isEmpty() || number.isEmpty() || fullname.isEmpty() || emailid.isEmpty() || dateOfBirth == null) {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setHeaderText("Invalid Input");
-            alert.setContentText("Please enter a valid information in all the fields");
+            alert.setContentText("Please enter valid information in all fields, including Date of Birth.");
             alert.showAndWait();
-            return; // Return from the method if username or password is empty
+            return;
         }
 
         if (con != null) {
@@ -85,7 +89,7 @@ public class SignUpController implements Initializable {
                 // Hash the password using SHA-256
                 String hashedPassword = hashPassword(password);
 
-                // Prepare the INSERT statement
+                // Prepare the INSERT statement for users table
                 String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, 'customer')";
                 PreparedStatement statement = con.prepareStatement(sql);
                 statement.setString(1, username);
@@ -95,23 +99,24 @@ public class SignUpController implements Initializable {
                 int rowsInserted = statement.executeUpdate();
                 if (rowsInserted > 0) {
                     // Insert into the `patient_info` table
-                    String patientSql = "INSERT INTO patient_info (username, name, date_of_birth, gender, contact_number, email) VALUES (?, ?, CURDATE(), ?, ?, ?)";
+                    String patientSql = "INSERT INTO patient_info (username, name, date_of_birth, gender, contact_number, email) VALUES (?, ?, ?, ?, ?, ?)";
                     PreparedStatement patientStmt = con.prepareStatement(patientSql);
                     patientStmt.setString(1, username);
                     patientStmt.setString(2, fullname);
-                    patientStmt.setString(3, gender);
-                    patientStmt.setString(4, number);
-                    patientStmt.setString(5, emailid);
+                    patientStmt.setDate(3, java.sql.Date.valueOf(dateOfBirth)); // Convert LocalDate to SQL Date
+                    patientStmt.setString(4, gender);
+                    patientStmt.setString(5, number);
+                    patientStmt.setString(6, emailid);
                     patientStmt.executeUpdate();
 
-                    // Show a popup window indicating successful user insertion
+                    // Show success alert
                     Alert successAlert = new Alert(AlertType.INFORMATION);
                     successAlert.setTitle("Success");
                     successAlert.setHeaderText(null);
                     successAlert.setContentText("Your account has been created.");
                     successAlert.showAndWait();
 
-                    // Switch to MainScreen.fxml scene upon user confirmation
+                    // Switch to MainScreen.fxml scene
                     if (successAlert.getResult() == ButtonType.OK) {
                         FXMLLoader loader = new FXMLLoader(getClass().getResource("MainScreen.fxml"));
                         Parent root = loader.load();
@@ -141,6 +146,7 @@ public class SignUpController implements Initializable {
             System.out.println("Failed to connect to the database!");
         }
     }
+
 
     private String hashPassword(String password) throws NoSuchAlgorithmException {
         MessageDigest digest = MessageDigest.getInstance("SHA-256");

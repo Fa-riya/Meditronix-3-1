@@ -41,6 +41,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.ResourceBundle;
+import java.util.List;
 
 public class PrescribedPurchase implements Initializable {
 
@@ -59,8 +60,8 @@ public class PrescribedPurchase implements Initializable {
     ObservableList<Medicine> cartList = FXCollections.observableArrayList();
 
     @FXML
-    private Button LoadPres;
-
+    private ChoiceBox<String> PresCode;
+    private String username;
     @FXML
     private Button addButton;
 
@@ -72,15 +73,14 @@ public class PrescribedPurchase implements Initializable {
 
     @FXML
     private Button BackButton;
-    @FXML
-    private TextField PresCode;
+
     @FXML
     private TextField Quantity;
 
     @FXML
     private Label subtotalLabel;
     @FXML
-    private Label PatName;
+    private Label GenerationDate;
 
     @FXML
     private TableView<MedicineDataPrescription> PresTable;
@@ -109,40 +109,50 @@ public class PrescribedPurchase implements Initializable {
         dosageColumn.setCellValueFactory(new PropertyValueFactory<>("dosage"));
         quantityColumn.setCellValueFactory(new PropertyValueFactory<>("quantity"));
         frequencyColumn.setCellValueFactory(new PropertyValueFactory<>("frequency"));
+        username=UserSession.getInstance().getUsername();
+        try {
+            // Get patient ID from username
+            String patientId = GlobalDB.getPatientId(username);
+
+            // Fetch prescriptions for the patient
+            List<Prescription> prescriptions = GlobalDB.getPrescriptionsByPatientId(patientId);
+
+            // Populate the ChoiceBox with prescription codes
+            for (Prescription prescription : prescriptions) {
+                PresCode.getItems().add(prescription.getPrescriptionCode());
+            }
+
+            // Set up listener for the ChoiceBox
+            PresCode.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    loadPrescriptionData(newValue, prescriptions);
+                }
+            });
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert("Database Error", "An error occurred while fetching prescriptions.");
+        }
     }
 
-
-
     @FXML
-    void LoadPresButtonPressed(ActionEvent event) {
-        code = PresCode.getText().trim();
+    private void loadPrescriptionData(String code, List<Prescription> prescriptions) {
+        // Find the prescription and update the generation date
+        Prescription selectedPrescription = prescriptions.stream()
+                .filter(prescription -> prescription.getPrescriptionCode().equals(code))
+                .findFirst()
+                .orElse(null);
 
+        if (selectedPrescription != null) {
+            GenerationDate.setText(selectedPrescription.getGeneratedDate().toString());
+        }
+
+        // Fetch and display medicine data
         ObservableList<MedicineDataPrescription> data = GlobalDB.getMedicineData(code);
         if (data == null || data.isEmpty()) {
             showError("Invalid prescription code, no data found.");
+            PresTable.getItems().clear(); // Clear the table if no data is found
         } else {
             PresTable.setItems(data);
-        }
-        setPatientName();
-    }
-    @FXML
-    void setPatientName() {
-        try (Connection conn = GlobalDB.dbConnect();) {
-            String sql = "SELECT name FROM patients WHERE uniqueid = ?";
-            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
-                pstmt.setString(1, code);
-                try (ResultSet rs = pstmt.executeQuery()) {
-                    if (rs.next()) {
-                        String patientName = rs.getString("name");
-                        PatName.setText(patientName); // Assuming PatName is the ID of your Label
-                    } else {
-                        showAlert("Patient Not Found", "No patient found with the provided unique ID.");
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            showAlert("Database Error", "An error occurred while accessing the database: " + e.getMessage());
-            e.printStackTrace(); // Print the stack trace for debugging
         }
     }
 
