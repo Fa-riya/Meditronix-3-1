@@ -8,6 +8,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -61,6 +62,23 @@ public class MainScreen implements Initializable{
     private Database db;
     @FXML
     private Connection con;
+
+    private void addHoverEffect(Button button) {
+        // Change the button's background color to light green when the mouse enters
+        button.setOnMouseEntered((MouseEvent event) -> {
+            button.setStyle("-fx-background-color: lightgreen;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-border-radius: 20"
+            );
+        });
+
+        // Revert to the default color when the mouse exits
+        button.setOnMouseExited((MouseEvent event) -> {
+            button.setStyle("-fx-background-color:  #5DC1B5;" +
+                    "-fx-background-radius: 20;" +
+                    "-fx-border-radius: 20"); // Reset to the default style
+        });
+    }
 
     @FXML
     public void doctorButtonPressed()
@@ -228,6 +246,8 @@ public class MainScreen implements Initializable{
     public void initialize(URL url, ResourceBundle resourceBundle) {
         userNameInput.setStyle("-fx-text-fill: #0e0707;");
         userNameInput.setStyle("-fx-background-radius:20");
+        addHoverEffect(genericMedLogInButton);
+        addHoverEffect(login);
 
     }
 }
