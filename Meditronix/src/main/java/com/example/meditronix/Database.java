@@ -20,7 +20,13 @@ import java.util.List;
 
 public class Database {
 
-
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Database Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     public Connection dbConnect()  {
         try {
@@ -199,7 +205,7 @@ public class Database {
         }
 
         stmt.close();
-        con.close();
+        //con.close();
     }
     public String createUniqueID()
     {
@@ -590,7 +596,10 @@ public class Database {
                 if (rs.next()) {
                     return rs.getFloat("Available_Quantity");
                 } else {
+                    showError("The requested medicine is not available in this store location." +
+                            "\nPlease try another location");
                     throw new SQLException("No record found for the specified medicine, dosage, and location.");
+
                 }
             }
         }
@@ -664,6 +673,7 @@ public class Database {
                 price = rs.getFloat("Selling_price");
             } else {
                 throw new SQLException("No record found for the specified medicine and dosage in the shop inventory.");
+
             }
 
             con.commit(); // Commit transaction
