@@ -90,7 +90,7 @@ public class SignUpController implements Initializable {
                 String hashedPassword = hashPassword(password);
 
                 // Prepare the INSERT statement for users table
-                String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, 'customer')";
+                String sql = "INSERT INTO users (username, password, role) VALUES (?, ?, 'customer');";
                 PreparedStatement statement = con.prepareStatement(sql);
                 statement.setString(1, username);
                 statement.setString(2, hashedPassword);
@@ -99,7 +99,7 @@ public class SignUpController implements Initializable {
                 int rowsInserted = statement.executeUpdate();
                 if (rowsInserted > 0) {
                     // Insert into the `patient_info` table
-                    String patientSql = "INSERT INTO patient_info (username, name, date_of_birth, gender, contact_number, email) VALUES (?, ?, ?, ?, ?, ?)";
+                    String patientSql = "INSERT INTO patient_info (username, name, date_of_birth, gender, contact_number, email) VALUES (?, ?, ?, ?, ?, ?);";
                     PreparedStatement patientStmt = con.prepareStatement(patientSql);
                     patientStmt.setString(1, username);
                     patientStmt.setString(2, fullname);
